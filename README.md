@@ -18,12 +18,10 @@ The first thing you’ll notice, if you have ever used KeyLaunch before, is the 
 Here’s a screenshot of version 2.x:
 
 ![KeyLaunch 2.x](http://software.xfx.net/utilities/kl/images/kl_ss_small.gif)
-KeyLaunch 2.x
 
 And here’s a screenshot of version 3.0:
 
 [![KeyLaunch 3.0](http://whenimbored.xfx.net/wp-content/uploads/2012/10/kl3-300x117.png)](http://whenimbored.xfx.net/wp-content/uploads/2012/10/kl3.png)
-KeyLaunch 3.0
 
 Here’s a list of some of the most important improvements over version 2.x:
 
