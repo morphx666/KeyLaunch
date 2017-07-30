@@ -38,6 +38,7 @@ Although 3.0 is considerably more advanced than version 2.x, there are several f
 - The ability to perform operations over file from the search results window:
 
 [![KeyLaunch 2.x Context Menu](http://whenimbored.xfx.net/wp-content/uploads/2012/10/kl2x_context_menu-300x82.png)](http://whenimbored.xfx.net/wp-content/uploads/2012/10/kl2x_context_menu.png)
+
 KeyLaunch 2.x Context Menu
 
 - Show the file’s properties
