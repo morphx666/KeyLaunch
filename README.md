@@ -9,7 +9,7 @@ The thing is that, contrary to how most app launchers worked back in the time, t
 - Type a couple of keywords
 - Select the desired file from a list of matches
 
-Sounds familiar? Well, of course it does! It is the way [Spotlight](http://en.wikipedia.org/wiki/Spotlight_%28software%29) and the [Start Menu](http://en.wikipedia.org/wiki/Start_menu) work! Wait, that’s also how the dreaded [Start Screen](http://en.wikipedia.org/wiki/Start_screen#Start_screen) in Windows 8 works!
+Sounds familiar? Well, of course it does! It is the way [Spotlight](http://en.wikipedia.org/wiki/Spotlight_%28software%29) and the [Start Menu](http://en.wikipedia.org/wiki/Start_menu) work! Wait, that’s also how the dreaded [Start Screen](https://en.wikipedia.org/wiki/Start_menu#Third_version) in Windows 8 works!
 
 Version 3.0 adds several new features that makes KeyLaunch a really nice application that, if it were ever been made public, I’m sure a lot of people would’ve liked it.
 
