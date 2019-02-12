@@ -109,6 +109,7 @@ Public Class FormSetup
     Private Sub SetupListViews()
         ImageListExtIcons.Images.Add(SearchItem.GetIconFromFile("."))
         ImageListExtIcons.Images.Add(My.Resources.book_reportHS)
+        ImageListExtIcons.Images.Add(New Bitmap(16, 16))
 
         tpPaths.ImageIndex = 2
         tpCategories.ImageIndex = 3
@@ -311,7 +312,7 @@ Public Class FormSetup
         For Each c As ColumnHeader In lv.Columns
             c.ImageIndex = If(c.Equals(mSortingColumn),
                                 If(mSortOrder = SortOrder.Ascending, 0, 1),
-                                -1)
+                                4) ' Setting it to -1 no longer works; Index 4 is a dummy blank image
         Next
 
         ' Create a comparer.
@@ -319,6 +320,7 @@ Public Class FormSetup
 
         ' Sort.
         lv.Sort()
+        lv.Refresh()
         mSortingColumn.AutoResize(ColumnHeaderAutoResizeStyle.HeaderSize)
 
         lv.Tag = New Object() {mSortingColumn, mSortOrder}
@@ -802,6 +804,12 @@ Public Class FormSetup
         AddCategory(c, True)
         TextBoxCatName.Focus()
         TextBoxCatName.SelectAll()
+    End Sub
+
+    Private Sub ButtonCatRem_Click(sender As Object, e As EventArgs) Handles ButtonCatRem.Click
+        Dim c As SearchCategory = CType(ListViewCats.SelectedItems(0).Tag, SearchCategory)
+        searchEngine.Categories.Remove(c)
+        ListViewCats.Items.Remove(ListViewCats.SelectedItems(0))
     End Sub
 
     Private Sub ButtonDefaults_Click(sender As Object, e As EventArgs) Handles ButtonDefaults.Click

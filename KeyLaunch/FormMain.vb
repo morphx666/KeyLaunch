@@ -188,7 +188,7 @@ Public Class FormMain
         KeyboardHookApi.HookKeyboard()
 #Else
         AddHandler Me.KeyDown, AddressOf HandleKeyDown
-        AddHandler lvFiles.KeyDown, AddressOf HandleKeyDown
+        AddHandler ListViewFiles.KeyDown, AddressOf HandleKeyDown
 #End If
     End Sub
 
@@ -872,9 +872,9 @@ Public Class FormMain
             Case Keys.Down
                 If e.Control Then SetMainHeight(Me.Height + 20)
             Case Keys.Left
-                If e.Control Then lvFiles.DirAreaWidthPercentage += 5
+                If e.Control Then ListViewFiles.DirAreaWidthPercentage += 5
             Case Keys.Right
-                If e.Control Then lvFiles.DirAreaWidthPercentage -= 5
+                If e.Control Then ListViewFiles.DirAreaWidthPercentage -= 5
 
 #Else
             Case Keys.Up
