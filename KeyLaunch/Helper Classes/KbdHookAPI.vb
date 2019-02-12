@@ -4,8 +4,11 @@ Imports System.Drawing
 Imports System.Threading
 
 Public Class KbdHookAPI
+    Private Delegate Function KeyboardHookDelegate(ByVal Code As Integer, ByVal wParam As Integer, ByRef lParam As KBDLLHOOKSTRUCT) As Integer
+    <MarshalAs(UnmanagedType.FunctionPtr)> Private callback As KeyboardHookDelegate
+
     Private Declare Function UnhookWindowsHookEx Lib "user32" (ByVal hHook As Integer) As Integer
-    Private Declare Function SetWindowsHookEx Lib "user32" Alias "SetWindowsHookExA" (ByVal idHook As Integer, ByVal lpfn As KeyboardHookDelegate, ByVal hmod As Integer, ByVal dwThreadId As Integer) As Integer
+    Private Declare Function SetWindowsHookEx Lib "user32" Alias "SetWindowsHookExA" (ByVal idHook As Integer, ByVal lpfn As KeyboardHookDelegate, ByVal hmod As Integer, ByVal dwThreadId As Integer) As Long
     Private Declare Function GetAsyncKeyState Lib "user32" (ByVal vKey As Integer) As Integer
     Private Declare Function CallNextHookEx Lib "user32" (ByVal hHook As Integer, ByVal nCode As Integer, ByVal wParam As Integer, ByVal lParam As KBDLLHOOKSTRUCT) As Integer
 
@@ -44,7 +47,7 @@ Public Class KbdHookAPI
     Public Sub New()
         mHookedKeys.Add(Keys.Scroll)
 
-        'frmForm = New Form
+        'frmForm = New Form()
         'frmForm.Location = New Point(0, 0)
         'frmForm.Size = New Size(200, 20)
         'frmForm.Visible = True
@@ -98,15 +101,13 @@ Public Class KbdHookAPI
         Return CallNextHookEx(keyboardHandle, code, wParam, lParam)
     End Function
 
-    Private Delegate Function KeyboardHookDelegate(ByVal Code As Integer, ByVal wParam As Integer, ByRef lParam As KBDLLHOOKSTRUCT) As Integer
-    <MarshalAs(UnmanagedType.FunctionPtr)> Private callback As KeyboardHookDelegate
-
     Public Sub HookKeyboard()
         callback = New KeyboardHookDelegate(AddressOf KeyboardCallback)
         keyboardHandle = SetWindowsHookEx(WH_KEYBOARD_LL,
                                           callback,
-                                          Marshal.GetHINSTANCE([Assembly].GetExecutingAssembly().GetModules()(0)).ToInt32(), 0)
-        Console.WriteLine($"Hooked: {keyboardHandle}")
+                                          Marshal.GetHINSTANCE([Assembly].GetExecutingAssembly().GetModules()(0)),
+                                          0)
+        Debug.WriteLine($"Hooked: {keyboardHandle}")
     End Sub
 
     Private Function Hooked() As Boolean

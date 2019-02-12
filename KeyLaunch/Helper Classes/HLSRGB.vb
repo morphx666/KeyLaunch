@@ -8,7 +8,7 @@ Public Class HLSRGB
     Private mLuminance As Single = 0
     Private mSaturation As Single = 0
 
-    Public Sub New(ByVal c As Drawing.Color)
+    Public Sub New(ByVal c As Color)
         mRed = c.R
         mGreen = c.G
         mBlue = c.B
@@ -151,7 +151,7 @@ Public Class HLSRGB
             Dim gnorm As Single = (maxval - mGreen) / mdiff
             Dim bnorm As Single = (maxval - mBlue) / mdiff
 
-            mSaturation = IIf(Of Single)(mLuminance <= 0.5F, (mdiff / msum), mdiff / (510.0F - msum))
+            mSaturation = IIf(mLuminance <= 0.5F, (mdiff / msum), mdiff / (510.0F - msum))
 
             If mRed = maxval Then mHue = 60.0F * (6.0F + bnorm - gnorm)
             If mGreen = maxval Then mHue = 60.0F * (2.0F + rnorm - bnorm)

@@ -14,15 +14,15 @@ Public Class frmAbout
     Private msgTop As Integer = 0
     Private cpInfo As String = ""
 
-    Private Sub frmAbout_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Click
+    Private Sub frmAbout_Click(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Click
         Me.Close()
     End Sub
 
-    Private Sub frmAbout_KeyUp(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles Me.KeyUp
+    Private Sub frmAbout_KeyUp(ByVal sender As Object, ByVal e As KeyEventArgs) Handles Me.KeyUp
         Me.Close()
     End Sub
 
-    Private Sub frmAbout_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+    Private Sub frmAbout_Load(ByVal sender As Object, ByVal e As EventArgs) Handles MyBase.Load
         Me.SetStyle(ControlStyles.AllPaintingInWmPaint, True)
         Me.SetStyle(ControlStyles.OptimizedDoubleBuffer, True)
         Me.SetStyle(ControlStyles.UserPaint, True)
@@ -71,7 +71,7 @@ Public Class frmAbout
                 "This computer program is protected by copyright law and international treaties."
     End Sub
 
-    Private Sub frmAbout_Paint(ByVal sender As Object, ByVal e As System.Windows.Forms.PaintEventArgs) Handles Me.Paint
+    Private Sub frmAbout_Paint(ByVal sender As Object, ByVal e As PaintEventArgs) Handles Me.Paint
         Dim g As Graphics = e.Graphics
 
         g.SmoothingMode = Drawing2D.SmoothingMode.HighQuality

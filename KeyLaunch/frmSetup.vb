@@ -16,11 +16,11 @@ Public Class frmSetup
     Private extTotal As Integer
 
     Private mSortingColumn As ColumnHeader
-    Private mSortOrder As System.Windows.Forms.SortOrder
+    Private mSortOrder As SortOrder
 
     Private shortcutIsValid As Boolean
 
-    Private Sub frmSetup_FormClosing(ByVal sender As Object, ByVal e As System.Windows.Forms.FormClosingEventArgs) Handles Me.FormClosing
+    Private Sub frmSetup_FormClosing(ByVal sender As Object, ByVal e As FormClosingEventArgs) Handles Me.FormClosing
         cancelLoadExtThread = True
 
         With frmMain.Preferences
@@ -44,7 +44,7 @@ Public Class frmSetup
         Loop
     End Sub
 
-    Private Sub frmSetup_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+    Private Sub frmSetup_Load(ByVal sender As Object, ByVal e As EventArgs) Handles MyBase.Load
         Me.TopMost = False
         With frmMain.Preferences
             If Not .setupWindowLocation.IsEmpty Then
@@ -272,8 +272,8 @@ Public Class frmSetup
         Dim lvi As ListViewItem
 
         lvi = New ListViewItem(sp.FirendlyName, 2)
-        lvi.SubItems.Add(New ListViewItem.ListViewSubItem(lvi, IIf(Of String)(sp.Recurse, "Yes", "No")))
-        lvi.SubItems.Add(New ListViewItem.ListViewSubItem(lvi, IIf(Of String)(sp.Exceptions.Count > 0, "Yes", "No")))
+        lvi.SubItems.Add(New ListViewItem.ListViewSubItem(lvi, IIf(sp.Recurse, "Yes", "No")))
+        lvi.SubItems.Add(New ListViewItem.ListViewSubItem(lvi, IIf(sp.Exceptions.Count > 0, "Yes", "No")))
         lvi.SubItems.Add(New ListViewItem.ListViewSubItem(lvi, sp.FullPathName))
         lvi.Tag = sp
         lvFolders.Items.Add(lvi)
@@ -284,7 +284,7 @@ Public Class frmSetup
         End If
     End Sub
 
-    Private Sub ListViewColumnClick(ByVal sender As Object, ByVal e As System.Windows.Forms.ColumnClickEventArgs)
+    Private Sub ListViewColumnClick(ByVal sender As Object, ByVal e As ColumnClickEventArgs)
         ' Get the new sorting column.
         Dim lv As ListView = CType(sender, FFListView)
         Dim newSortingColumn As ColumnHeader = lv.Columns(e.Column)
@@ -312,7 +312,7 @@ Public Class frmSetup
         mSortingColumn = newSortingColumn
         For Each c As ColumnHeader In lv.Columns
             If c.Equals(mSortingColumn) Then
-                c.ImageIndex = IIf(Of Integer)(mSortOrder = SortOrder.Ascending, 0, 1)
+                c.ImageIndex = IIf(mSortOrder = SortOrder.Ascending, 0, 1)
             Else
                 c.ImageIndex = -1
             End If
@@ -328,7 +328,7 @@ Public Class frmSetup
         lv.Tag = New Object() {mSortingColumn, mSortOrder}
     End Sub
 
-    Private Sub lvFolders_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lvFolders.SelectedIndexChanged
+    Private Sub lvFolders_SelectedIndexChanged(ByVal sender As Object, ByVal e As EventArgs) Handles lvFolders.SelectedIndexChanged
         If lvFolders.SelectedItems.Count = 0 Then
             gbFolderInfo.Enabled = False
             gbRecurse.Enabled = False
@@ -410,17 +410,17 @@ Public Class frmSetup
         Next
     End Sub
 
-    Private Sub chkRecurse_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles chkRecurse.CheckedChanged
+    Private Sub chkRecurse_CheckedChanged(ByVal sender As Object, ByVal e As EventArgs) Handles chkRecurse.CheckedChanged
         gbRecurse.Enabled = chkRecurse.Checked
 
         UpdateSelectedPathItem()
     End Sub
 
-    Private Sub tvEx_AfterCheck(ByVal sender As Object, ByVal e As System.Windows.Forms.TreeViewEventArgs) Handles tvExceptions.AfterCheck
+    Private Sub tvEx_AfterCheck(ByVal sender As Object, ByVal e As TreeViewEventArgs) Handles tvExceptions.AfterCheck
         ProcessExclussions(e.Node)
     End Sub
 
-    Private Sub tvExceptions_BeforeExpand(ByVal sender As Object, ByVal e As System.Windows.Forms.TreeViewCancelEventArgs) Handles tvExceptions.BeforeExpand
+    Private Sub tvExceptions_BeforeExpand(ByVal sender As Object, ByVal e As TreeViewCancelEventArgs) Handles tvExceptions.BeforeExpand
         If e.Node.Nodes(0).Text = "..." Then
             e.Node.Nodes.Clear()
             InitLoadExceptions(e.Node)
@@ -501,13 +501,13 @@ Public Class frmSetup
     End Sub
 
     Private Sub UpdateCheckStateOnChildNodes(ByVal n As TreeNode)
-        n.ForeColor = IIf(Of Color)(n.Checked, Color.FromKnownColor(KnownColor.ControlDark), Me.ForeColor)
+        n.ForeColor = IIf(n.Checked, Color.FromKnownColor(KnownColor.ControlDark), Me.ForeColor)
         For Each cn As TreeNode In n.Nodes
             cn.Checked = n.Checked
         Next
     End Sub
 
-    Private Sub txtName_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtName.TextChanged
+    Private Sub txtName_TextChanged(ByVal sender As Object, ByVal e As EventArgs) Handles txtName.TextChanged
         UpdateSelectedPathItem()
     End Sub
 
@@ -531,10 +531,10 @@ Public Class frmSetup
 
             If .Recurse <> chkRecurse.Checked Then
                 .Recurse = chkRecurse.Checked
-                item.SubItems(chPathsRecurse.Index).Text = IIf(Of String)(.Recurse, "Yes", "No")
+                item.SubItems(chPathsRecurse.Index).Text = IIf(.Recurse, "Yes", "No")
             End If
 
-            item.SubItems(chPathsExceptions.Index).Text = IIf(Of String)(.Exceptions.Count > 0, "Yes", "No")
+            item.SubItems(chPathsExceptions.Index).Text = IIf(.Exceptions.Count > 0, "Yes", "No")
         End With
 
         lvFolders.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize)
@@ -576,11 +576,11 @@ Public Class frmSetup
         lvCats.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize)
     End Sub
 
-    Private Sub txtLocation_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtLocation.TextChanged
+    Private Sub txtLocation_TextChanged(ByVal sender As Object, ByVal e As EventArgs) Handles txtLocation.TextChanged
         UpdateSelectedPathItem()
     End Sub
 
-    Private Sub btnOpen_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnOpen.Click
+    Private Sub btnOpen_Click(ByVal sender As Object, ByVal e As EventArgs) Handles btnOpen.Click
         With fbDialog
             .Description = "Select the new location for the '" + selPathItem.ShortPathName + "' folder"
             .SelectedPath = selPathItem.FullPathName
@@ -592,7 +592,7 @@ Public Class frmSetup
         End With
     End Sub
 
-    Private Sub btnPathAdd_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnPathAdd.Click
+    Private Sub btnPathAdd_Click(ByVal sender As Object, ByVal e As EventArgs) Handles btnPathAdd.Click
         With fbDialog
             .Description = "Select the folder to add to the list of folders that LeyLaunch will use for its searches"
             .RootFolder = Environment.SpecialFolder.MyComputer
@@ -604,7 +604,7 @@ Public Class frmSetup
         End With
     End Sub
 
-    Private Sub btnOK_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnOK.Click
+    Private Sub btnOK_Click(ByVal sender As Object, ByVal e As EventArgs) Handles btnOK.Click
         cancelLoadExtThread = True
 
         Me.Cursor = Cursors.WaitCursor
@@ -632,12 +632,12 @@ Public Class frmSetup
         Me.Close()
     End Sub
 
-    Private Sub btnCancel_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnCancel.Click
+    Private Sub btnCancel_Click(ByVal sender As Object, ByVal e As EventArgs) Handles btnCancel.Click
         Me.DialogResult = Windows.Forms.DialogResult.Cancel
         Me.Close()
     End Sub
 
-    Private Sub btnRemove_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnPathRemove.Click
+    Private Sub btnRemove_Click(ByVal sender As Object, ByVal e As EventArgs) Handles btnPathRemove.Click
         For Each sp As SearchPath In searchEngine.SearchPaths
             If sp = selPathItem Then
                 searchEngine.SearchPaths.Remove(sp)
@@ -648,15 +648,15 @@ Public Class frmSetup
         Next
     End Sub
 
-    Private Sub lvCats_DrawColumnHeader(ByVal sender As Object, ByVal e As System.Windows.Forms.DrawListViewColumnHeaderEventArgs) Handles lvCats.DrawColumnHeader
+    Private Sub lvCats_DrawColumnHeader(ByVal sender As Object, ByVal e As DrawListViewColumnHeaderEventArgs) Handles lvCats.DrawColumnHeader
         e.DrawDefault = True
     End Sub
 
-    Private Sub lvCats_DrawItem(ByVal sender As Object, ByVal e As System.Windows.Forms.DrawListViewItemEventArgs) Handles lvCats.DrawItem
+    Private Sub lvCats_DrawItem(ByVal sender As Object, ByVal e As DrawListViewItemEventArgs) Handles lvCats.DrawItem
         'e.DrawText()
     End Sub
 
-    Private Sub lvCats_DrawSubItem(ByVal sender As Object, ByVal e As System.Windows.Forms.DrawListViewSubItemEventArgs) Handles lvCats.DrawSubItem
+    Private Sub lvCats_DrawSubItem(ByVal sender As Object, ByVal e As DrawListViewSubItemEventArgs) Handles lvCats.DrawSubItem
         If e.ColumnIndex = 1 Then
             Dim backColor As SolidBrush
             Dim s As Integer = e.Bounds.Height - 4
@@ -695,11 +695,11 @@ Public Class frmSetup
         End If
     End Sub
 
-    Private Sub lvCats_EnabledChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles lvCats.EnabledChanged
+    Private Sub lvCats_EnabledChanged(ByVal sender As Object, ByVal e As EventArgs) Handles lvCats.EnabledChanged
         lvCats.Invalidate()
     End Sub
 
-    Private Sub lvCats_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lvCats.SelectedIndexChanged
+    Private Sub lvCats_SelectedIndexChanged(ByVal sender As Object, ByVal e As EventArgs) Handles lvCats.SelectedIndexChanged
         If lvCats.SelectedItems.Count = 0 Then
             gbCatInfo.Enabled = False
             gbExtensions.Enabled = False
@@ -746,7 +746,7 @@ Public Class frmSetup
         isUpdating = False
     End Sub
 
-    Private Sub btnCatColor_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnCatColor.Click
+    Private Sub btnCatColor_Click(ByVal sender As Object, ByVal e As EventArgs) Handles btnCatColor.Click
         With cDlg
             .AllowFullOpen = True
             .AnyColor = True
@@ -759,11 +759,11 @@ Public Class frmSetup
         End With
     End Sub
 
-    Private Sub txtCatName_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtCatName.TextChanged
+    Private Sub txtCatName_TextChanged(ByVal sender As Object, ByVal e As EventArgs) Handles txtCatName.TextChanged
         UpdateSelectedCategoryItem()
     End Sub
 
-    Private Sub lvExt_ItemChecked(ByVal sender As Object, ByVal e As System.Windows.Forms.ItemCheckedEventArgs) Handles lvExt.ItemChecked
+    Private Sub lvExt_ItemChecked(ByVal sender As Object, ByVal e As ItemCheckedEventArgs) Handles lvExt.ItemChecked
         If isUpdating Then Exit Sub
 
         Dim extA() As String = e.Item.SubItems(chExtExtensions.Index).Text.Replace(" ", "").Split(CChar(","))
@@ -790,7 +790,7 @@ Public Class frmSetup
         isUpdating = False
     End Sub
 
-    Private Sub txtShortcut_KeyDown(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles txtShortcut.KeyDown
+    Private Sub txtShortcut_KeyDown(ByVal sender As Object, ByVal e As KeyEventArgs) Handles txtShortcut.KeyDown
         If e.KeyValue >= 31 Then
             txtShortcut.Tag = e.KeyData
             shortcutIsValid = True
@@ -801,7 +801,7 @@ Public Class frmSetup
         txtShortcut.Text = SearchCategory.KeysToString(e.KeyData)
     End Sub
 
-    Private Sub txtShortcut_KeyUp(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles txtShortcut.KeyUp
+    Private Sub txtShortcut_KeyUp(ByVal sender As Object, ByVal e As KeyEventArgs) Handles txtShortcut.KeyUp
         If shortcutIsValid = False Then
             txtShortcut.Text = Keys.None.ToString
             txtShortcut.Tag = New KeyEventArgs(Keys.None)
@@ -810,7 +810,7 @@ Public Class frmSetup
         UpdateSelectedCategoryItem()
     End Sub
 
-    Private Sub btnCatAdd_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnCatAdd.Click
+    Private Sub btnCatAdd_Click(ByVal sender As Object, ByVal e As EventArgs) Handles btnCatAdd.Click
         Dim c As SearchCategory = New SearchCategory()
         c.Name = "[New Category]"
         searchEngine.Categories.Add(c)
@@ -819,7 +819,7 @@ Public Class frmSetup
         txtCatName.SelectAll()
     End Sub
 
-    Private Sub cmdDefaults_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdDefaults.Click
+    Private Sub cmdDefaults_Click(ByVal sender As Object, ByVal e As EventArgs) Handles cmdDefaults.Click
         If MsgBox("Are you sure you want to load the default paths and categories?" + vbCrLf + vbCrLf + "Note that this action cannot be undone and you will loose all your custom paths and categories", _
                     MsgBoxStyle.Question Or MsgBoxStyle.YesNo, "Load Defaults") = MsgBoxResult.Yes Then
             frmMain.LoadDefaultSearchPreferences()
@@ -827,7 +827,7 @@ Public Class frmSetup
         End If
     End Sub
 
-    Private Sub HandleDragOver(ByVal sender As Object, ByVal e As System.Windows.Forms.DragEventArgs)
+    Private Sub HandleDragOver(ByVal sender As Object, ByVal e As DragEventArgs)
         If e.Data.GetDataPresent(DataFormats.FileDrop) Then
             e.Effect = DragDropEffects.All
         Else
@@ -835,28 +835,28 @@ Public Class frmSetup
         End If
     End Sub
 
-    Private Sub HandleDragDrop(ByVal sender As Object, ByVal e As System.Windows.Forms.DragEventArgs)
+    Private Sub HandleDragDrop(ByVal sender As Object, ByVal e As DragEventArgs)
         frmMain.HandleDroppedFiles(e)
         SetupUI()
     End Sub
 
-    Private Sub cmsExceptionsToggleChildNodes_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmsExceptionsToggleChildNodes.Click
+    Private Sub cmsExceptionsToggleChildNodes_Click(ByVal sender As Object, ByVal e As EventArgs) Handles cmsExceptionsToggleChildNodes.Click
         For Each cNode As TreeNode In tvExceptions.SelectedNode.Nodes
             cNode.Checked = Not cNode.Checked
         Next
     End Sub
 
-    Private Sub cmsExceptions_Opening(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles cmsExceptions.Opening
+    Private Sub cmsExceptions_Opening(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles cmsExceptions.Opening
         cmsExceptionsBrowse.Enabled = (tvExceptions.SelectedNode IsNot Nothing)
         cmsExceptionsToggleChildNodes.Enabled = (tvExceptions.SelectedNode IsNot Nothing)
     End Sub
 
-    Private Sub cmsExceptionsBrowse_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmsExceptionsBrowse.Click
+    Private Sub cmsExceptionsBrowse_Click(ByVal sender As Object, ByVal e As EventArgs) Handles cmsExceptionsBrowse.Click
         KLListViewItem.OpenContainingFolder(selPathItem.FullPathName + "\" + tvExceptions.SelectedNode.FullPath)
     End Sub
 
 #Region "Extensions Editor"
-    Private Sub btnEditExtensions_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnEditExtensions.Click
+    Private Sub btnEditExtensions_Click(ByVal sender As Object, ByVal e As EventArgs) Handles btnEditExtensions.Click
         lbExtensions.Items.Clear()
 
         For Each ext As String In selCatItem.Extensions
@@ -875,11 +875,11 @@ Public Class frmSetup
         pExtEditor.Visible = True
     End Sub
 
-    Private Sub btnCloseExtEditor_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnCloseExtEditor.Click
+    Private Sub btnCloseExtEditor_Click(ByVal sender As Object, ByVal e As EventArgs) Handles btnCloseExtEditor.Click
         CloseExtensionsEditor()
     End Sub
 
-    Private Sub pExtEditor_LostFocus(ByVal sender As Object, ByVal e As System.EventArgs) Handles pExtEditor.LostFocus
+    Private Sub pExtEditor_LostFocus(ByVal sender As Object, ByVal e As EventArgs) Handles pExtEditor.LostFocus
         CloseExtensionsEditor()
     End Sub
 
@@ -896,7 +896,7 @@ Public Class frmSetup
         UpdateSelectedCategoryItem()
     End Sub
 
-    Private Sub lbExtensions_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lbExtensions.SelectedIndexChanged
+    Private Sub lbExtensions_SelectedIndexChanged(ByVal sender As Object, ByVal e As EventArgs) Handles lbExtensions.SelectedIndexChanged
         UpdateExtEditorUI()
     End Sub
 
@@ -910,7 +910,7 @@ Public Class frmSetup
         End If
     End Sub
 
-    Private Sub btnAddExt_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnAddExt.Click
+    Private Sub btnAddExt_Click(ByVal sender As Object, ByVal e As EventArgs) Handles btnAddExt.Click
         txtExtension.Text = txtExtension.Text.ToLower
 
         If txtExtension.Text = "" Then Exit Sub
@@ -923,7 +923,7 @@ Public Class frmSetup
         txtExtension.Text = ""
     End Sub
 
-    Private Sub btnEditExt_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnEditExt.Click
+    Private Sub btnEditExt_Click(ByVal sender As Object, ByVal e As EventArgs) Handles btnEditExt.Click
         Dim ext As String = CType(lbExtensions.SelectedItem, String)
         lbExtensions.Items.Remove(lbExtensions.SelectedItem)
 
@@ -933,7 +933,7 @@ Public Class frmSetup
         txtExtension.Focus()
     End Sub
 
-    Private Sub btnDeleteExt_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnDeleteExt.Click
+    Private Sub btnDeleteExt_Click(ByVal sender As Object, ByVal e As EventArgs) Handles btnDeleteExt.Click
         lbExtensions.Items.Remove(lbExtensions.SelectedItem)
 
         UpdateExtEditorUI()

@@ -18,12 +18,12 @@ Public Class SearchEngine
     Private mSearchPaths As SearchPaths
     Private mLimitCategory As SearchCategory
     Private mPathsExceptions As List(Of String)
-    Private mExtensions As Generic.Dictionary(Of String, SearchCategory)
+    Private mExtensions As Dictionary(Of String, SearchCategory)
     Private mMaxThreads As Integer
     Private mProgressTotal As Integer
     Private mProgressCount As Integer
 
-    Private mSearchThreads As List(Of Thread) = New List(Of Thread)
+    Private mSearchThreads As New List(Of Tasks.Task)
     Private threadThreadsMonitor As Thread
     Private mAbortMonitor As Boolean
 
@@ -33,7 +33,7 @@ Public Class SearchEngine
     Public Event ProgressChanged()
 
     Public Sub New()
-        mMaxThreads = 10
+        mMaxThreads = 20
         mItems = New SearchItems()
         mCategories = New SearchCategories()
         mSearchPaths = New SearchPaths()
@@ -109,7 +109,6 @@ Public Class SearchEngine
 
     Public Sub Abort()
         If mState = StateConstants.Idle Then Exit Sub
-
         mState = StateConstants.Aborting
     End Sub
 
@@ -118,26 +117,28 @@ Public Class SearchEngine
             Thread.Sleep(60)
 
             If mState <> StateConstants.Idle Then
-                For i As Integer = 0 To mSearchThreads.Count - 1
-                    If (mSearchThreads(i) Is Nothing) OrElse (Not mSearchThreads(i).IsAlive) Then
-                        mSearchThreads.RemoveAt(i)
-                        Exit For
-                    End If
-                Next
+                SyncLock mSearchThreads
+                    For i As Integer = 0 To mSearchThreads.Count - 1
+                        If (mSearchThreads(i) Is Nothing) OrElse mSearchThreads(i).Status <> Tasks.TaskStatus.Running Then
+                            mSearchThreads.RemoveAt(i)
+                            Exit For
+                        End If
+                    Next
 
-                If mSearchThreads.Count = 0 Then
-                    Select Case mState
-                        Case StateConstants.Aborting
-                            DoneAborting()
-                        Case StateConstants.Searching
-                            DoneSearching()
-                    End Select
-                End If
+                    If mSearchThreads.Count = 0 Then
+                        Select Case mState
+                            Case StateConstants.Aborting
+                                DoneAborting()
+                            Case StateConstants.Searching
+                                DoneSearching()
+                        End Select
+                    End If
+                End SyncLock
             End If
         Loop Until mAbortMonitor
     End Sub
 
-    Public Sub StartNewSearch(ByVal query As String, ByVal pathsExceptions As List(Of String), ByVal selExtensions As Generic.Dictionary(Of String, SearchCategory), Optional ByVal limitCategory As SearchCategory = Nothing)
+    Public Sub StartNewSearch(ByVal query As String, ByVal pathsExceptions As List(Of String), ByVal selExtensions As Dictionary(Of String, SearchCategory), Optional ByVal limitCategory As SearchCategory = Nothing)
         Me.Query = query
         mLimitCategory = limitCategory
         InitItemsList()
@@ -148,53 +149,53 @@ Public Class SearchEngine
             mProgressTotal = mSearchPaths.Count
             mProgressCount = 0
 
-            mState = StateConstants.Searching
-            mPathsExceptions = pathsExceptions
-            mExtensions = selExtensions
-            For Each folder As SearchPath In mSearchPaths
-                If mState = StateConstants.Aborting Then Exit For
-                CreateNewSearchThread(folder)
-            Next
+            SyncLock mSearchThreads
+                mState = StateConstants.Searching
+                mPathsExceptions = pathsExceptions
+                mExtensions = selExtensions
+                For Each folder As SearchPath In mSearchPaths
+                    If mState = StateConstants.Aborting Then Exit For
+                    CreateNewSearchThread(folder)
+                Next
+            End SyncLock
         End If
     End Sub
 
     Private Sub CreateNewSearchThread(ByVal folder As SearchPath)
         If mState <> StateConstants.Searching Then Exit Sub
-
-        Try
-            mSearchThreads.Add(New Thread(New ParameterizedThreadStart(AddressOf InitSearchThread)))
-            With mSearchThreads(mSearchThreads.Count - 1)
-                .SetApartmentState(ApartmentState.STA)
-                .Start(folder)
-            End With
-        Catch ex As Exception
-            Application.DoEvents()
-            CreateNewSearchThread(folder)
-        End Try
+        mSearchThreads.Add(Tasks.Task.Run(Sub() DoSearch(CType(folder, SearchPath))))
     End Sub
 
     Private Sub InitSearchThread(ByVal param As Object)
-        DoSearch(CType(param, SearchPath))
+        Try
+            DoSearch(CType(param, SearchPath))
+        Catch ex As Exception
+            Debug.WriteLine($"{NameOf(InitSearchThread)}: {ex.Message}")
+        End Try
     End Sub
 
     Private Sub DoSearch(ByVal folder As SearchPath)
         If Not folder.DirectoryInfo.Exists Then Exit Sub
+        If mState <> StateConstants.Searching Then Exit Sub
         If (folder.DirectoryInfo.Attributes And IO.FileAttributes.Hidden) = IO.FileAttributes.Hidden Then Exit Sub
 
         Dim c As SearchCategory
         Dim fi As IO.FileInfo
 
-        For Each extCat As Generic.KeyValuePair(Of String, SearchCategory) In mExtensions
-            If mState <> StateConstants.Searching Then Exit Sub
-
-            For Each fi In folder.DirectoryInfo.GetFiles("*" + extCat.Key)
+        Try
+            For Each extCat As KeyValuePair(Of String, SearchCategory) In mExtensions
                 If mState <> StateConstants.Searching Then Exit Sub
 
-                If IsMatch(fi.Name) Then
-                    RaiseEvent MatchFound(New SearchItem(fi), extCat.Value)
-                End If
+                For Each fi In folder.DirectoryInfo.GetFiles("*" + extCat.Key)
+                    If mState <> StateConstants.Searching Then Exit Sub
+
+                    If IsMatch(fi.Name) Then RaiseEvent MatchFound(New SearchItem(fi), extCat.Value)
+                Next
             Next
-        Next
+        Catch ex As Exception
+            Debug.WriteLine($"{NameOf(DoSearch)}: {ex.Message}")
+            Exit Sub
+        End Try
 
         Dim linkFiles() As IO.FileInfo = folder.DirectoryInfo.GetFiles("*.lnk")
         Dim lnkExt As String
@@ -232,7 +233,11 @@ Public Class SearchEngine
                 If Not mPathsExceptions.Contains(di.FullName) Then
                     mProgressTotal += 1
                     If mSearchThreads.Count >= mMaxThreads Then
-                        DoSearch(New SearchPath(di, True, folder.Exceptions))
+                        Try
+                            DoSearch(New SearchPath(di, True, folder.Exceptions))
+                        Catch ex As Exception
+                            Debug.WriteLine($"{NameOf(DoSearch)}: {ex.Message}")
+                        End Try
                     Else
                         CreateNewSearchThread(New SearchPath(di, True, folder.Exceptions))
                     End If

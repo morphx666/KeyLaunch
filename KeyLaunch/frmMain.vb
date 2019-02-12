@@ -40,7 +40,7 @@ Public Class frmMain
     Private titleTextArea As Rectangle
     Private mIgnoreFocus As Boolean
     Private mPathsExceptions As List(Of String) = New List(Of String)
-    Private mSelExtensions As Generic.Dictionary(Of String, SearchCategory)
+    Private mSelExtensions As Dictionary(Of String, SearchCategory)
     Private mSearchSucessful As Boolean
     Private mDontClearList As Boolean
     Private mHasFocus As Boolean
@@ -102,7 +102,7 @@ Public Class frmMain
     End Enum
     Private mSearchState As SearchStateConstants
 
-    <Serializable()> _
+    <Serializable()>
     Friend Structure PreferencesDef
         Dim hotKey As Keys
         Dim retypeDelay As Integer
@@ -143,7 +143,7 @@ Public Class frmMain
     Private Const ValidChars As String = "!#$%&()+,-"
 
 #Region "frmMain Events"
-    Private Sub frmMain_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+    Private Sub frmMain_Load(ByVal sender As Object, ByVal e As EventArgs) Handles MyBase.Load
         Me.Height = 0
         Me.Visible = False
         Me.SetStyle(ControlStyles.AllPaintingInWmPaint, True)
@@ -195,7 +195,7 @@ Public Class frmMain
 #End If
     End Sub
 
-    Private Sub frmMain_Activated(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Activated
+    Private Sub frmMain_Activated(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Activated
         mHasFocus = True
         If mainExpColMode = ExpColConstants.Expanding Then
             mainExpColMode = ExpColConstants.Expanded
@@ -209,7 +209,7 @@ Public Class frmMain
         If mainExpColMode = ExpColConstants.Expanded Then mKeyboardHook.CaptureAllKeys = True
     End Sub
 
-    Private Sub frmMain_Deactivate(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Deactivate
+    Private Sub frmMain_Deactivate(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Deactivate
         mHasFocus = mIgnoreFocus
         If Me.Visible Then
             SetMainColor()
@@ -222,7 +222,7 @@ Public Class frmMain
         End If
     End Sub
 
-    Private Sub frmMain_MouseDown(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles Me.MouseDown
+    Private Sub frmMain_MouseDown(ByVal sender As Object, ByVal e As MouseEventArgs) Handles Me.MouseDown
         Select Case e.Button
             Case Windows.Forms.MouseButtons.Left
                 If e.Y <= Preferences.mainTitleHeight Then
@@ -259,7 +259,7 @@ Public Class frmMain
         End Select
     End Sub
 
-    Private Sub frmMain_MouseMove(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles Me.MouseMove
+    Private Sub frmMain_MouseMove(ByVal sender As Object, ByVal e As MouseEventArgs) Handles Me.MouseMove
         Select Case mouseMode
             Case MouseModeConstants.Dragging
                 Dim newLeft As Integer = Me.Left + (e.X - dragClickPos.X)
@@ -311,12 +311,12 @@ Public Class frmMain
         End Select
     End Sub
 
-    Private Sub frmMain_MouseUp(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles Me.MouseUp
+    Private Sub frmMain_MouseUp(ByVal sender As Object, ByVal e As MouseEventArgs) Handles Me.MouseUp
         mouseMode = MouseModeConstants.Normal
         Me.Cursor = Cursors.Default
     End Sub
 
-    Private Sub frmMain_Resize(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Resize
+    Private Sub frmMain_Resize(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Resize
         If lvFiles.Bottom > Me.Height - (mBottomHandleHeight + 2) Then
             lvFiles.Height = Me.Height - (mBottomHandleHeight + 2) - lvFiles.Top
         End If
@@ -324,7 +324,7 @@ Public Class frmMain
         SetMainColor() 'SetRects()
     End Sub
 
-    Private Sub frmMain_Paint(ByVal sender As Object, ByVal e As System.Windows.Forms.PaintEventArgs) Handles Me.Paint
+    Private Sub frmMain_Paint(ByVal sender As Object, ByVal e As PaintEventArgs) Handles Me.Paint
         'e.Graphics.Clear(Me.BackColor)
 
         e.Graphics.SmoothingMode = Drawing2D.SmoothingMode.AntiAlias
@@ -337,7 +337,7 @@ Public Class frmMain
         If e.ClipRectangle.Height > Preferences.mainTitleHeight Then RenderBottom(e.Graphics)
     End Sub
 
-    Private Sub frmMain_FormClosing(ByVal sender As Object, ByVal e As System.Windows.Forms.FormClosingEventArgs) Handles Me.FormClosing
+    Private Sub frmMain_FormClosing(ByVal sender As Object, ByVal e As FormClosingEventArgs) Handles Me.FormClosing
         If e.CloseReason = CloseReason.UserClosing Then
             If MsgBox("Are you sure you want to exit KeyLaunch?", MsgBoxStyle.YesNo Or MsgBoxStyle.Question, "Confirm Exit KeyLaunch") = MsgBoxResult.No Then
                 e.Cancel = True
@@ -376,8 +376,8 @@ Public Class frmMain
     Private Sub RenderCategoriesTab(ByVal g As Graphics)
         FillRoundedRectangle(g, pnlCats.Left - 1, 0, pnlCats.Width + 2, pnlCats.Height + 40 + 1, 15, catTabDarkColor)
         FillRoundedRectangle(g, pnlCats.Left, 0, pnlCats.Width, pnlCats.Height + 40, 15, catAllCatsColor)
-        DrawShadowedText(g, selCategoryName, _
-                            catAllCatsFont, Color.White, _
+        DrawShadowedText(g, selCategoryName,
+                            catAllCatsFont, Color.White,
                             New Rectangle(pnlCats.Left, pnlCats.Bottom + 5, pnlCats.Width, 30), catAllCatsStringFormat)
 
         g.DrawString("F12", catShortcutFont, catAllCatsShortcutColor, pnlCats.Right - 16, pnlCats.Bottom + 2)
@@ -529,12 +529,12 @@ Public Class frmMain
 #End Region
 
 #Region "Main Menu Handling"
-    Private Sub mMain_Opening(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles mMain.Opening
+    Private Sub mMain_Opening(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles mMain.Opening
         mMainOpenKeyLaunch.Visible = (mainExpColMode = ExpColConstants.Collapsed)
         mMainSep01.Visible = (mainExpColMode = ExpColConstants.Collapsed)
     End Sub
 
-    Private Sub mMainSearchPreferences_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles mMainSearchPreferences.Click
+    Private Sub mMainSearchPreferences_Click(ByVal sender As Object, ByVal e As EventArgs) Handles mMainSearchPreferences.Click
         Dim f As frmSetup = New frmSetup
 
         mDontClearList = True
@@ -551,11 +551,11 @@ Public Class frmMain
         UpdateCacheAndShortcuts()
     End Sub
 
-    Private Sub mMainExit_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles mMainExit.Click
+    Private Sub mMainExit_Click(ByVal sender As Object, ByVal e As EventArgs) Handles mMainExit.Click
         Me.Close()
     End Sub
 
-    Private Sub mMainOptions_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles mMainOptions.Click
+    Private Sub mMainOptions_Click(ByVal sender As Object, ByVal e As EventArgs) Handles mMainOptions.Click
         Dim f As frmOptions = New frmOptions
 
         mDontClearList = True
@@ -571,11 +571,11 @@ Public Class frmMain
         mIgnoreFocus = False
     End Sub
 
-    Private Sub mMainOpenKeyLaunch_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles mMainOpenKeyLaunch.Click
+    Private Sub mMainOpenKeyLaunch_Click(ByVal sender As Object, ByVal e As EventArgs) Handles mMainOpenKeyLaunch.Click
         ShowKL(False)
     End Sub
 
-    Private Sub mMainAbout_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles mMainAbout.Click
+    Private Sub mMainAbout_Click(ByVal sender As Object, ByVal e As EventArgs) Handles mMainAbout.Click
         Dim f As frmAbout = New frmAbout
 
         mDontClearList = True
@@ -847,7 +847,7 @@ Public Class frmMain
 #End Region
 
 #Region "Keyboard Handling"
-    Public Sub HandleKeyDown(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs)
+    Public Sub HandleKeyDown(ByVal sender As Object, ByVal e As KeyEventArgs)
         Dim key As Keys = e.KeyCode
         Select Case key
             Case (Preferences.hotKey And Keys.KeyCode)
@@ -946,7 +946,7 @@ Public Class frmMain
         RepaintTitleArea()
     End Sub
 
-    Private Sub mKeyboardHook_KeyDown(ByVal e As System.Windows.Forms.KeyEventArgs) Handles mKeyboardHook.KeyDown
+    Private Sub mKeyboardHook_KeyDown(ByVal e As KeyEventArgs) Handles mKeyboardHook.KeyDown
         Me.Visible = True
 
         If lvCats.Focused Then
@@ -1006,11 +1006,11 @@ Public Class frmMain
         catsExpColMode = ExpColConstants.Collapsing
     End Sub
 
-    Private Sub lvCats_DoubleClick(ByVal sender As Object, ByVal e As System.EventArgs) Handles lvCats.DoubleClick
+    Private Sub lvCats_DoubleClick(ByVal sender As Object, ByVal e As EventArgs) Handles lvCats.DoubleClick
         SelectCategory()
     End Sub
 
-    Private Sub lvCats_DrawItem(ByVal sender As Object, ByVal e As System.Windows.Forms.DrawListViewItemEventArgs) Handles lvCats.DrawItem
+    Private Sub lvCats_DrawItem(ByVal sender As Object, ByVal e As DrawListViewItemEventArgs) Handles lvCats.DrawItem
         If lvCats.SelectedIndices.Count = 0 Then Exit Sub
 
         Dim isSelected As Boolean = (lvCats.SelectedIndices(0) = e.ItemIndex)
@@ -1053,7 +1053,7 @@ Public Class frmMain
         backColor.Dispose()
     End Sub
 
-    Private Sub lvCats_KeyDown(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles lvCats.KeyDown
+    Private Sub lvCats_KeyDown(ByVal sender As Object, ByVal e As KeyEventArgs) Handles lvCats.KeyDown
         Select Case e.KeyCode
             Case Keys.Enter
                 SelectCategory()
@@ -1064,14 +1064,14 @@ Public Class frmMain
         End Select
     End Sub
 
-    Private Sub lvCats_LostFocus(ByVal sender As Object, ByVal e As System.EventArgs) Handles lvCats.LostFocus
+    Private Sub lvCats_LostFocus(ByVal sender As Object, ByVal e As EventArgs) Handles lvCats.LostFocus
         Select Case catsExpColMode
             Case ExpColConstants.Expanded, ExpColConstants.Expanding
                 catsExpColMode = ExpColConstants.Collapsing
         End Select
     End Sub
 
-    Private Sub lvCats_RetrieveVirtualItem(ByVal sender As Object, ByVal e As System.Windows.Forms.RetrieveVirtualItemEventArgs) Handles lvCats.RetrieveVirtualItem
+    Private Sub lvCats_RetrieveVirtualItem(ByVal sender As Object, ByVal e As RetrieveVirtualItemEventArgs) Handles lvCats.RetrieveVirtualItem
         If e.ItemIndex = 0 Then
             e.Item = New ListViewItem("All Categories")
         Else
@@ -1141,7 +1141,7 @@ Public Class frmMain
         mSearchEngine.SearchPaths.Add(New SearchPath(path.FullName.Replace(path.Parent.Name, "All Users"), True))
         mSearchEngine.SearchPaths(1).FirendlyName += " (All Users)"
 
-        Dim osInfo As System.OperatingSystem = System.Environment.OSVersion
+        Dim osInfo As OperatingSystem = System.Environment.OSVersion
         If osInfo.Version.Major >= 6 Then
             mSearchEngine.SearchPaths.Add(New SearchPath(Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu), True))
 
@@ -1348,7 +1348,7 @@ Public Class frmMain
     End Sub
 
     Private Sub CacheExtensions()
-        mSelExtensions = New Generic.Dictionary(Of String, SearchCategory)
+        mSelExtensions = New Dictionary(Of String, SearchCategory)
         For Each c As SearchCategory In mSearchEngine.Categories
             If (selCategory Is Nothing) OrElse selCategory.Name = c.Name Then
                 For Each ext As String In c.Extensions
@@ -1367,7 +1367,7 @@ Public Class frmMain
     End Sub
 
 #Region "lvFiles Events"
-    Private Sub lvFiles_DoubleClick(ByVal sender As Object, ByVal e As System.EventArgs) Handles lvFiles.DoubleClick
+    Private Sub lvFiles_DoubleClick(ByVal sender As Object, ByVal e As EventArgs) Handles lvFiles.DoubleClick
         LaunchSelectedItem()
     End Sub
 
@@ -1375,33 +1375,33 @@ Public Class frmMain
         RepaintTitleArea()
     End Sub
 
-    Private Sub lvFiles_Resize(ByVal sender As Object, ByVal e As System.EventArgs) Handles lvFiles.Resize
-        titleTextArea = New Rectangle(34, _
-                                    CInt((Preferences.mainTitleHeight - Preferences.mainFontHeight) / 2), _
-                                    Width - 28 * 2 - 16, _
+    Private Sub lvFiles_Resize(ByVal sender As Object, ByVal e As EventArgs) Handles lvFiles.Resize
+        titleTextArea = New Rectangle(34,
+                                    CInt((Preferences.mainTitleHeight - Preferences.mainFontHeight) / 2),
+                                    Width - 28 * 2 - 16,
                                     Preferences.mainTitleHeight)
     End Sub
 
-    Private Sub lvFiles_MouseMove(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles lvFiles.MouseMove
+    Private Sub lvFiles_MouseMove(ByVal sender As Object, ByVal e As MouseEventArgs) Handles lvFiles.MouseMove
         frmMain_MouseMove(Me, New MouseEventArgs(e.Button, e.Clicks, e.X + lvFiles.Left, e.Y + lvFiles.Top, e.Delta))
     End Sub
 
-    Private Sub lvFiles_MouseDown(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles lvFiles.MouseDown
+    Private Sub lvFiles_MouseDown(ByVal sender As Object, ByVal e As MouseEventArgs) Handles lvFiles.MouseDown
         frmMain_MouseDown(Me, New MouseEventArgs(e.Button, e.Clicks, e.X + lvFiles.Left, e.Y + lvFiles.Top, e.Delta))
     End Sub
 
-    Private Sub lvFiles_MouseUp(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles lvFiles.MouseUp
+    Private Sub lvFiles_MouseUp(ByVal sender As Object, ByVal e As MouseEventArgs) Handles lvFiles.MouseUp
         frmMain_MouseUp(Me, New MouseEventArgs(e.Button, e.Clicks, e.X + lvFiles.Left, e.Y + lvFiles.Top, e.Delta))
     End Sub
 #End Region
 
 #Region "Drag & Drop Handling"
-    Private addedFileTypes As Generic.Dictionary(Of String, String)
+    Private addedFileTypes As Dictionary(Of String, String)
     Private addedFolders As List(Of String)
     Private removedExceptions As List(Of String)
     Private enabledRecursions As List(Of String)
 
-    Private Sub lvFiles_DragOver(ByVal sender As Object, ByVal e As System.Windows.Forms.DragEventArgs) Handles lvFiles.DragOver
+    Private Sub lvFiles_DragOver(ByVal sender As Object, ByVal e As DragEventArgs) Handles lvFiles.DragOver
         If e.Data.GetDataPresent(DataFormats.FileDrop) Then
             e.Effect = DragDropEffects.All
         Else
@@ -1409,7 +1409,7 @@ Public Class frmMain
         End If
     End Sub
 
-    Private Sub lvFiles_DragDrop(ByVal sender As Object, ByVal e As System.Windows.Forms.DragEventArgs) Handles lvFiles.DragDrop
+    Private Sub lvFiles_DragDrop(ByVal sender As Object, ByVal e As DragEventArgs) Handles lvFiles.DragDrop
         HandleDroppedFiles(e)
     End Sub
 
@@ -1611,7 +1611,7 @@ Public Class frmMain
         Me.Invalidate()
     End Sub
 
-    Private Sub niIcon_MouseDoubleClick(ByVal sender As System.Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles niIcon.MouseDoubleClick
+    Private Sub niIcon_MouseDoubleClick(ByVal sender As Object, ByVal e As MouseEventArgs) Handles niIcon.MouseDoubleClick
         ShowKL(True)
     End Sub
 End Class

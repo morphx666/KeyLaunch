@@ -3,7 +3,7 @@ Public Class frmOptions
 
     Private hotKeyIsValid As Boolean
 
-    Private Sub frmOptions_FormClosing(ByVal sender As Object, ByVal e As System.Windows.Forms.FormClosingEventArgs) Handles Me.FormClosing
+    Private Sub frmOptions_FormClosing(ByVal sender As Object, ByVal e As FormClosingEventArgs) Handles Me.FormClosing
         If Me.Preferences.hotKey = Keys.None Then
             If MsgBox("Are you sure you want to disable the use of a hot key to open KeyLaunch?" + vbCrLf + vbCrLf +
                 "If you answer Yes, the 'Show Tray Icon' option will be enabled by default", MsgBoxStyle.Question Or MsgBoxStyle.YesNo, "Hot key no set or invalid") = MsgBoxResult.No Then
@@ -14,7 +14,7 @@ Public Class frmOptions
         End If
     End Sub
 
-    Private Sub frmOptions_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+    Private Sub frmOptions_Load(ByVal sender As Object, ByVal e As EventArgs) Handles MyBase.Load
         SetupUI()
 
         AddHandler tbHue.ValueChanged, AddressOf SetNewColor
@@ -51,18 +51,18 @@ Public Class frmOptions
         frmMain.Invalidate()
     End Sub
 
-    Private Sub cmdCancel_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdCancel.Click
+    Private Sub cmdCancel_Click(ByVal sender As Object, ByVal e As EventArgs) Handles cmdCancel.Click
         Me.DialogResult = Windows.Forms.DialogResult.Cancel
         Me.Close()
     End Sub
 
-    Private Sub cmdOK_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdOK.Click
+    Private Sub cmdOK_Click(ByVal sender As Object, ByVal e As EventArgs) Handles cmdOK.Click
         frmMain.Preferences = Me.Preferences
         Me.DialogResult = Windows.Forms.DialogResult.OK
         Me.Close()
     End Sub
 
-    Private Sub txtHotKey_KeyDown(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles txtHotKey.KeyDown
+    Private Sub txtHotKey_KeyDown(ByVal sender As Object, ByVal e As KeyEventArgs) Handles txtHotKey.KeyDown
         If e.KeyValue >= 31 Then
             Me.Preferences.hotKey = e.KeyData
             hotKeyIsValid = True
@@ -73,34 +73,34 @@ Public Class frmOptions
         txtHotKey.Text = SearchCategory.KeysToString(e.KeyData)
     End Sub
 
-    Private Sub txtHotKey_KeyUp(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles txtHotKey.KeyUp
+    Private Sub txtHotKey_KeyUp(ByVal sender As Object, ByVal e As KeyEventArgs) Handles txtHotKey.KeyUp
         If hotKeyIsValid = False Then
             txtHotKey.Text = Keys.None.ToString
             Me.Preferences.hotKey = Keys.None
         End If
     End Sub
 
-    Private Sub tbRetypeDelay_Scroll(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbRetypeDelay.Scroll
+    Private Sub tbRetypeDelay_Scroll(ByVal sender As Object, ByVal e As EventArgs) Handles tbRetypeDelay.Scroll
 
     End Sub
 
-    Private Sub tbRetypeDelay_ValueChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles tbRetypeDelay.ValueChanged
+    Private Sub tbRetypeDelay_ValueChanged(ByVal sender As Object, ByVal e As EventArgs) Handles tbRetypeDelay.ValueChanged
         Me.Preferences.retypeDelay = tbRetypeDelay.Value * 100
     End Sub
 
-    Private Sub chkStartWithWindows_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles chkStartWithWindows.CheckedChanged
+    Private Sub chkStartWithWindows_CheckedChanged(ByVal sender As Object, ByVal e As EventArgs) Handles chkStartWithWindows.CheckedChanged
         Me.Preferences.startWithWindows = chkStartWithWindows.Checked
     End Sub
 
-    Private Sub chkShowTrayIcon_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles chkShowTrayIcon.CheckedChanged
+    Private Sub chkShowTrayIcon_CheckedChanged(ByVal sender As Object, ByVal e As EventArgs) Handles chkShowTrayIcon.CheckedChanged
         Me.Preferences.showTrayIcon = chkShowTrayIcon.Checked
     End Sub
 
-    Private Sub chkHideOnFocusLost_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles chkHideOnFocusLost.CheckedChanged
+    Private Sub chkHideOnFocusLost_CheckedChanged(ByVal sender As Object, ByVal e As EventArgs) Handles chkHideOnFocusLost.CheckedChanged
         Me.Preferences.hideOnFocusLost = chkHideOnFocusLost.Checked
     End Sub
 
-    Private Sub btnDefaults_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnDefaults.Click
+    Private Sub btnDefaults_Click(ByVal sender As Object, ByVal e As EventArgs) Handles btnDefaults.Click
         frmMain.SetDefaultKLPreferences()
         Me.Preferences = frmMain.Preferences
         SetupUI()

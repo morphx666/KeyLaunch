@@ -166,11 +166,11 @@ Public Class KLListView
     End Function
 
     <Category("Appearance"), DefaultValue(GetType(Color), "Color.White")> _
-    Public Overrides Property BackColor() As System.Drawing.Color
+    Public Overrides Property BackColor() As Color
         Get
             Return MyBase.BackColor
         End Get
-        Set(ByVal value As System.Drawing.Color)
+        Set(ByVal value As Color)
             MyBase.BackColor = value
         End Set
     End Property
@@ -185,7 +185,7 @@ Public Class KLListView
         End Set
     End Property
 
-    Private Sub KLListView_MouseClick(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles Me.MouseClick
+    Private Sub KLListView_MouseClick(ByVal sender As Object, ByVal e As MouseEventArgs) Handles Me.MouseClick
         If mSelectedItem IsNot Nothing Then mSelectedItem.IsSelected = False
         mMouseClickAt = e.Y
 
@@ -198,11 +198,11 @@ Public Class KLListView
         RepaintControl()
     End Sub
 
-    Private Sub KLListView_Paint(ByVal sender As Object, ByVal e As System.Windows.Forms.PaintEventArgs) Handles Me.Paint
+    Private Sub KLListView_Paint(ByVal sender As Object, ByVal e As PaintEventArgs) Handles Me.Paint
         RenderControl(e.Graphics, e.ClipRectangle)
     End Sub
 
-    Private Sub vsBar_KeyDown(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles vsBar.KeyDown
+    Private Sub vsBar_KeyDown(ByVal sender As Object, ByVal e As KeyEventArgs) Handles vsBar.KeyDown
         e.Handled = True
 
         Me.OnKeyDown(e)
@@ -333,6 +333,7 @@ Public Class KLListView
             End If
         Else
             If item.Bounds.IsEmpty Then
+                If item.SearchItem.ItemIcon Is Nothing Then Exit Sub
                 imgHeight = item.SearchItem.ItemIcon.Height
                 If item.IsSelected Then
                     textHeight = g.MeasureString(item.SearchItem.Name(False), item.FontSelected, 0).ToSize.Height
@@ -361,28 +362,28 @@ Public Class KLListView
             p.X += (item.SearchItem.ItemIcon.Width + 2)
 
             Dim rect As Rectangle = New Rectangle(p.X, p.Y + 2 + (imgHeight - textHeight) \ 2, item.Bounds.Width - p.X, item.Bounds.Height)
-            If item.IsSelected AndAlso selectColMode = SelectColConstants.Item Then
-                g.DrawString(item.SearchItem.Name(False), item.Font, New SolidBrush(item.ForeColorSelected), rect, itemStringFormat)
-            Else
-                g.DrawString(item.SearchItem.Name(False), item.Font, New SolidBrush(item.ForeColor), rect, itemStringFormat)
-            End If
+                If item.IsSelected AndAlso selectColMode = SelectColConstants.Item Then
+                    g.DrawString(item.SearchItem.Name(False), item.Font, New SolidBrush(item.ForeColorSelected), rect, itemStringFormat)
+                Else
+                    g.DrawString(item.SearchItem.Name(False), item.Font, New SolidBrush(item.ForeColor), rect, itemStringFormat)
+                End If
 
-            rect.X = rect.Right + 8
-            rect.Width = dirDisplayWidth - 14
-            Dim linkTargetDir As String = ""
-            If item.SearchItem.IsLink Then linkTargetDir = " » " + item.SearchItem.LinkedFileInfo.Directory.Name
-            If item.IsSelected AndAlso selectColMode = SelectColConstants.Folder Then
-                g.DrawString(item.SearchItem.FileInfo.Directory.Name + linkTargetDir, item.Font, New SolidBrush(item.ForeColorSelected), rect, itemStringFormat)
-            Else
-                g.DrawString(item.SearchItem.FileInfo.Directory.Name + linkTargetDir, item.Font, Brushes.DarkOrange, rect, itemStringFormat)
-            End If
+                rect.X = rect.Right + 8
+                rect.Width = dirDisplayWidth - 14
+                Dim linkTargetDir As String = ""
+                If item.SearchItem.IsLink Then linkTargetDir = " » " + item.SearchItem.LinkedFileInfo.Directory.Name
+                If item.IsSelected AndAlso selectColMode = SelectColConstants.Folder Then
+                    g.DrawString(item.SearchItem.FileInfo.Directory.Name + linkTargetDir, item.Font, New SolidBrush(item.ForeColorSelected), rect, itemStringFormat)
+                Else
+                    g.DrawString(item.SearchItem.FileInfo.Directory.Name + linkTargetDir, item.Font, Brushes.DarkOrange, rect, itemStringFormat)
+                End If
 
-            If mFirstVisibleItem Is Nothing Then
-                mFirstVisibleItem = item
-            Else
-                mLastVisibleItem = item
+                If mFirstVisibleItem Is Nothing Then
+                    mFirstVisibleItem = item
+                Else
+                    mLastVisibleItem = item
+                End If
             End If
-        End If
     End Sub
 
     Private Sub CollectionChanged(ByVal sender As KLListViewItemsCollection, ByVal reason As KLListViewItemsCollection.ChangeEventConstants) Handles mItems.Changed
@@ -511,7 +512,7 @@ Public Class KLListView
         End If
     End Sub
 
-    Private Sub KLListView_Resize(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Resize
+    Private Sub KLListView_Resize(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Resize
         SetDirAreaWidth()
     End Sub
 

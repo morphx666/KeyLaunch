@@ -7,51 +7,51 @@ Public Class SearchItems
         mCol = New List(Of SearchItem)
     End Sub
 
-    Public Sub Add(ByVal item As SearchItem) Implements System.Collections.Generic.ICollection(Of SearchItem).Add
+    Public Sub Add(ByVal item As SearchItem) Implements ICollection(Of SearchItem).Add
         mCol.Add(item)
     End Sub
 
-    Public Sub Clear() Implements System.Collections.Generic.ICollection(Of SearchItem).Clear
+    Public Sub Clear() Implements ICollection(Of SearchItem).Clear
         mCol.Clear()
     End Sub
 
-    Public Function Contains(ByVal item As SearchItem) As Boolean Implements System.Collections.Generic.ICollection(Of SearchItem).Contains
+    Public Function Contains(ByVal item As SearchItem) As Boolean Implements ICollection(Of SearchItem).Contains
         Return mCol.Contains(item)
     End Function
 
-    Public Sub CopyTo(ByVal array() As SearchItem, ByVal arrayIndex As Integer) Implements System.Collections.Generic.ICollection(Of SearchItem).CopyTo
+    Public Sub CopyTo(ByVal array() As SearchItem, ByVal arrayIndex As Integer) Implements ICollection(Of SearchItem).CopyTo
 
     End Sub
 
-    Public ReadOnly Property Count() As Integer Implements System.Collections.Generic.ICollection(Of SearchItem).Count
+    Public ReadOnly Property Count() As Integer Implements ICollection(Of SearchItem).Count
         Get
             Return mCol.Count
         End Get
     End Property
 
-    Public ReadOnly Property IsReadOnly() As Boolean Implements System.Collections.Generic.ICollection(Of SearchItem).IsReadOnly
+    Public ReadOnly Property IsReadOnly() As Boolean Implements ICollection(Of SearchItem).IsReadOnly
         Get
             Return False
         End Get
     End Property
 
-    Public Function Remove(ByVal item As SearchItem) As Boolean Implements System.Collections.Generic.ICollection(Of SearchItem).Remove
+    Public Function Remove(ByVal item As SearchItem) As Boolean Implements ICollection(Of SearchItem).Remove
         Return mCol.Remove(item)
     End Function
 
-    Public Function GetEnumerator() As System.Collections.Generic.IEnumerator(Of SearchItem) Implements System.Collections.Generic.IEnumerable(Of SearchItem).GetEnumerator
+    Public Function GetEnumerator() As IEnumerator(Of SearchItem) Implements IEnumerable(Of SearchItem).GetEnumerator
         Return mCol.GetEnumerator
     End Function
 
-    Public Function IndexOf(ByVal item As SearchItem) As Integer Implements System.Collections.Generic.IList(Of SearchItem).IndexOf
+    Public Function IndexOf(ByVal item As SearchItem) As Integer Implements IList(Of SearchItem).IndexOf
         Return mCol.IndexOf(item)
     End Function
 
-    Public Sub Insert(ByVal index As Integer, ByVal item As SearchItem) Implements System.Collections.Generic.IList(Of SearchItem).Insert
+    Public Sub Insert(ByVal index As Integer, ByVal item As SearchItem) Implements IList(Of SearchItem).Insert
         mCol.Insert(index, item)
     End Sub
 
-    Default Public Property Item(ByVal index As Integer) As SearchItem Implements System.Collections.Generic.IList(Of SearchItem).Item
+    Default Public Property Item(ByVal index As Integer) As SearchItem Implements IList(Of SearchItem).Item
         Get
             Return mCol.Item(index)
         End Get
@@ -132,11 +132,11 @@ Public Class SearchItems
         Return keyData
     End Function
 
-    Public Sub RemoveAt(ByVal index As Integer) Implements System.Collections.Generic.IList(Of SearchItem).RemoveAt
+    Public Sub RemoveAt(ByVal index As Integer) Implements IList(Of SearchItem).RemoveAt
         mCol.RemoveAt(index)
     End Sub
 
-    Public Function GetEnumerator1() As System.Collections.IEnumerator Implements System.Collections.IEnumerable.GetEnumerator
+    Public Function GetEnumerator1() As IEnumerator Implements IEnumerable.GetEnumerator
         Return mCol.GetEnumerator
     End Function
 End Class

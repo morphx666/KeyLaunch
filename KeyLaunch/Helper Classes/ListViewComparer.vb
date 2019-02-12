@@ -14,7 +14,7 @@ Public Class ListViewComparer
     ' for objects x and y.
     Public Function Compare(ByVal x As Object, ByVal y As _
         Object) As Integer Implements _
-        System.Collections.IComparer.Compare
+        IComparer.Compare
         Dim item_x As ListViewItem = DirectCast(x, _
             ListViewItem)
         Dim item_y As ListViewItem = DirectCast(y, _

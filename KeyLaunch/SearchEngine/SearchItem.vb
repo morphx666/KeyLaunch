@@ -124,8 +124,8 @@ Public Class SearchItem
     End Property
 
     Public Shared Function GetIconFromFile(ByVal fileName As String, Optional ByVal index As Integer = 0, Optional ByVal extractSmallIcon As Boolean = True) As Icon
-        Dim hImgSmall As IntPtr  'The handle to the system image list.
-        Dim hImgLarge As IntPtr  'The handle to the system image list.
+        Dim hImgSmall As IntPtr
+        Dim hImgLarge As IntPtr
         Dim shinfo As SHFILEINFO = New SHFILEINFO()
 
         fileName = fileName.Replace("""", "")
@@ -148,7 +148,7 @@ Public Class SearchItem
             If shinfo.hIcon.ToInt32 = 0 Then
                 Return Nothing
             Else
-                Return System.Drawing.Icon.FromHandle(shinfo.hIcon)
+                Return Icon.FromHandle(shinfo.hIcon)
             End If
         End If
 
@@ -156,7 +156,7 @@ Public Class SearchItem
     End Function
 
     Public Function ResolveLink() As IO.FileInfo
-        Dim mShellLink As ShellLink = New ShellLink
+        Dim mShellLink As ShellLink = New ShellLink()
         Dim linkPath As String = mShellLink.GetLinkedPath(mFileInfo.FullName)
         mShellLink = Nothing
 
@@ -168,7 +168,7 @@ Public Class SearchItem
     End Function
 
     Public Shared Function ResolveLink(ByVal file As IO.FileInfo) As String
-        Dim mShellLink As ShellLink = New ShellLink
+        Dim mShellLink As ShellLink = New ShellLink()
         Dim linkPath As String = mShellLink.GetLinkedPath(file.FullName)
         mShellLink = Nothing
 

@@ -383,7 +383,7 @@ Public Class ShellLink
     Private Const SFGAO_LINK As Integer = &H10000
     Private Const SHGFI_ATTRIBUTES As Integer = &H800
 
-    <StructLayoutAttribute(LayoutKind.Sequential)> _
+    <StructLayout(LayoutKind.Sequential)> _
     Private Structure SHFileInfo
         Private hIcon As IntPtr
         Private iIcon As IntPtr
@@ -401,30 +401,30 @@ Public Class ShellLink
         End Property
     End Structure
 
-    <StructLayoutAttribute(LayoutKind.Sequential, CharSet:=CharSet.Ansi)> _
+    <StructLayout(LayoutKind.Sequential, CharSet:=CharSet.Ansi)> _
     Private Structure Win32FindDataA
-        Private dwFileAttributes As System.UInt32
+        Private dwFileAttributes As UInteger
         Private ftCreationTime As ComTypes.FILETIME
         Private ftLastAccessTime As ComTypes.FILETIME
         Private ftLastWriteTime As ComTypes.FILETIME
-        Private nFileSizeHigh As System.UInt32
-        Private nFileSizeLow As System.UInt32
-        Private dwReserved0 As System.UInt32
-        Private dwReserved1 As System.UInt32
+        Private nFileSizeHigh As UInteger
+        Private nFileSizeLow As UInteger
+        Private dwReserved0 As UInteger
+        Private dwReserved1 As UInteger
         <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=260)> Private cFileName As String
         <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=14)> Private cAlternateFileName As String
     End Structure
 
-    <StructLayoutAttribute(LayoutKind.Sequential, CharSet:=CharSet.Unicode)> _
+    <StructLayout(LayoutKind.Sequential, CharSet:=CharSet.Unicode)> _
     Private Structure Win32FindDataW
-        Private dwFileAttributes As System.UInt32
+        Private dwFileAttributes As UInteger
         Private ftCreationTime As ComTypes.FILETIME
         Private ftLastAccessTime As ComTypes.FILETIME
         Private ftLastWriteTime As ComTypes.FILETIME
-        Private nFileSizeHigh As System.UInt32
-        Private nFileSizeLow As System.UInt32
-        Private dwReserved0 As System.UInt32
-        Private dwReserved1 As System.UInt32
+        Private nFileSizeHigh As UInteger
+        Private nFileSizeLow As UInteger
+        Private dwReserved0 As UInteger
+        Private dwReserved1 As UInteger
         <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=260)> Private cFileName As String
         <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=14)> Private cAlternateFileName As String
     End Structure
