@@ -9,7 +9,7 @@ The thing is that, contrary to how most app launchers worked back in the time, t
 - Type a couple of keywords
 - Select the desired file from a list of matches
 
-Sounds familiar? Well, of course it does! It is the way [Spotlight](http://en.wikipedia.org/wiki/Spotlight_%28software%29) and the [Start Menu](http://en.wikipedia.org/wiki/Start_menu) work! Wait, that’s also how the dreaded [Start Screen](https://en.wikipedia.org/wiki/Start_menu#Third_version) in Windows 8 works!
+Sounds familiar? Well, of course it does! It is the way [Spotlight](https://en.wikipedia.org/wiki/Spotlight_%28software%29) and the [Start Menu](https://en.wikipedia.org/wiki/Start_menu) work! Wait, that’s also how the dreaded [Start Screen](https://en.wikipedia.org/wiki/Start_menu#Third_version) in Windows 8 works!
 
 Version 3.0 adds several new features that makes KeyLaunch a really nice application that, if it were ever been made public, I’m sure a lot of people would’ve liked it.
 
@@ -17,25 +17,25 @@ The first thing you’ll notice, if you have ever used KeyLaunch before, is the 
 
 Here’s a screenshot of version 2.x:
 
-![KeyLaunch 2.x](http://software.xfx.net/utilities/kl/images/kl_ss_small.gif)
+![KeyLaunch 2.x](https://xfx.net/utilities/kl/images/kl_ss_small.gif)
 
 And here’s a screenshot of version 3.0:
 
-[![KeyLaunch 3.0](http://whenimbored.xfx.net/wp-content/uploads/2012/10/kl3-300x117.png)](http://whenimbored.xfx.net/wp-content/uploads/2012/10/kl3.png)
+[![KeyLaunch 3.0](https://whenimbored.xfx.net/wp-content/uploads/2012/10/kl3-300x117.png)](https://whenimbored.xfx.net/wp-content/uploads/2012/10/kl3.png)
 
 Here’s a list of some of the most important improvements over version 2.x:
 
 - Much nicer interface
 - Fully realizable interface
 - Easier configuration
-- [Customizable shortcut-able Categories based on files types](http://whenimbored.xfx.net/wp-content/uploads/2012/10/kl-categories1.png)
+- [Customizable shortcut-able Categories based on files types](https://whenimbored.xfx.net/wp-content/uploads/2012/10/kl-categories1.png)
 - Ability to open the folder containing the selected file
 
 Although 3.0 is considerably more advanced than version 2.x, there are several features missing, such as:
 
 - The ability to perform operations over files from the search results window:
 
-[![KeyLaunch 2.x Context Menu](http://whenimbored.xfx.net/wp-content/uploads/2012/10/kl2x_context_menu-300x82.png)](http://whenimbored.xfx.net/wp-content/uploads/2012/10/kl2x_context_menu.png)
+[![KeyLaunch 2.x Context Menu](https://whenimbored.xfx.net/wp-content/uploads/2012/10/kl2x_context_menu-300x82.png)](https://whenimbored.xfx.net/wp-content/uploads/2012/10/kl2x_context_menu.png)
 
 KeyLaunch 2.x Context Menu
 
