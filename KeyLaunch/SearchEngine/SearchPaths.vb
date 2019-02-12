@@ -9,7 +9,7 @@ Public Class SearchPaths
         mCol = New List(Of SearchPath)
     End Sub
 
-    Public Sub Add(ByVal item As SearchPath) Implements ICollection(Of SearchPath).Add
+    Public Sub Add(item As SearchPath) Implements ICollection(Of SearchPath).Add
         mCol.Add(item)
     End Sub
 
@@ -17,11 +17,11 @@ Public Class SearchPaths
         mCol.Clear()
     End Sub
 
-    Public Function Contains(ByVal item As SearchPath) As Boolean Implements ICollection(Of SearchPath).Contains
+    Public Function Contains(item As SearchPath) As Boolean Implements ICollection(Of SearchPath).Contains
         Return mCol.Contains(item)
     End Function
 
-    Public Sub CopyTo(ByVal array() As SearchPath, ByVal arrayIndex As Integer) Implements ICollection(Of SearchPath).CopyTo
+    Public Sub CopyTo(array() As SearchPath, arrayIndex As Integer) Implements ICollection(Of SearchPath).CopyTo
 
     End Sub
 
@@ -37,7 +37,7 @@ Public Class SearchPaths
         End Get
     End Property
 
-    Public Function Remove(ByVal item As SearchPath) As Boolean Implements ICollection(Of SearchPath).Remove
+    Public Function Remove(item As SearchPath) As Boolean Implements ICollection(Of SearchPath).Remove
         Return mCol.Remove(item)
     End Function
 
@@ -45,15 +45,15 @@ Public Class SearchPaths
         Return mCol.GetEnumerator
     End Function
 
-    Public Function IndexOf(ByVal item As SearchPath) As Integer Implements IList(Of SearchPath).IndexOf
+    Public Function IndexOf(item As SearchPath) As Integer Implements IList(Of SearchPath).IndexOf
         Return mCol.IndexOf(item)
     End Function
 
-    Public Sub Insert(ByVal index As Integer, ByVal item As SearchPath) Implements IList(Of SearchPath).Insert
+    Public Sub Insert(index As Integer, item As SearchPath) Implements IList(Of SearchPath).Insert
         mCol.Insert(index, item)
     End Sub
 
-    Default Public Property Item(ByVal index As Integer) As SearchPath Implements IList(Of SearchPath).Item
+    Default Public Property Item(index As Integer) As SearchPath Implements IList(Of SearchPath).Item
         Get
             Return mCol(index)
         End Get
@@ -62,7 +62,7 @@ Public Class SearchPaths
         End Set
     End Property
 
-    Public Sub RemoveAt(ByVal index As Integer) Implements IList(Of SearchPath).RemoveAt
+    Public Sub RemoveAt(index As Integer) Implements IList(Of SearchPath).RemoveAt
         mCol.RemoveAt(index)
     End Sub
 

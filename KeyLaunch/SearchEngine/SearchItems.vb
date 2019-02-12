@@ -7,7 +7,7 @@ Public Class SearchItems
         mCol = New List(Of SearchItem)
     End Sub
 
-    Public Sub Add(ByVal item As SearchItem) Implements ICollection(Of SearchItem).Add
+    Public Sub Add(item As SearchItem) Implements ICollection(Of SearchItem).Add
         mCol.Add(item)
     End Sub
 
@@ -15,11 +15,11 @@ Public Class SearchItems
         mCol.Clear()
     End Sub
 
-    Public Function Contains(ByVal item As SearchItem) As Boolean Implements ICollection(Of SearchItem).Contains
+    Public Function Contains(item As SearchItem) As Boolean Implements ICollection(Of SearchItem).Contains
         Return mCol.Contains(item)
     End Function
 
-    Public Sub CopyTo(ByVal array() As SearchItem, ByVal arrayIndex As Integer) Implements ICollection(Of SearchItem).CopyTo
+    Public Sub CopyTo(array() As SearchItem, arrayIndex As Integer) Implements ICollection(Of SearchItem).CopyTo
 
     End Sub
 
@@ -35,7 +35,7 @@ Public Class SearchItems
         End Get
     End Property
 
-    Public Function Remove(ByVal item As SearchItem) As Boolean Implements ICollection(Of SearchItem).Remove
+    Public Function Remove(item As SearchItem) As Boolean Implements ICollection(Of SearchItem).Remove
         Return mCol.Remove(item)
     End Function
 
@@ -43,15 +43,15 @@ Public Class SearchItems
         Return mCol.GetEnumerator
     End Function
 
-    Public Function IndexOf(ByVal item As SearchItem) As Integer Implements IList(Of SearchItem).IndexOf
+    Public Function IndexOf(item As SearchItem) As Integer Implements IList(Of SearchItem).IndexOf
         Return mCol.IndexOf(item)
     End Function
 
-    Public Sub Insert(ByVal index As Integer, ByVal item As SearchItem) Implements IList(Of SearchItem).Insert
+    Public Sub Insert(index As Integer, item As SearchItem) Implements IList(Of SearchItem).Insert
         mCol.Insert(index, item)
     End Sub
 
-    Default Public Property Item(ByVal index As Integer) As SearchItem Implements IList(Of SearchItem).Item
+    Default Public Property Item(index As Integer) As SearchItem Implements IList(Of SearchItem).Item
         Get
             Return mCol.Item(index)
         End Get
@@ -60,13 +60,13 @@ Public Class SearchItems
         End Set
     End Property
 
-    Public ReadOnly Property ItemDescription(ByVal index As Integer) As String
+    Public ReadOnly Property ItemDescription(index As Integer) As String
         Get
             Return SearchItems.GetExtensionDescription(mCol(index).FileInfo.Extension)
         End Get
     End Property
 
-    Public Shared Function GetAssociatedApplication(ByVal keyData As String) As String
+    Public Shared Function GetAssociatedApplication(keyData As String) As String
         If keyData = "linkfile" Then Return WinDir() + "explorer.exe"
 
         Dim key As Microsoft.Win32.RegistryKey = My.Computer.Registry.ClassesRoot.OpenSubKey(keyData + "\shell\open\command", False)
@@ -106,23 +106,19 @@ Public Class SearchItems
         Return keyData
     End Function
 
-    Private Shared Function FindInPath(ByVal file As String) As String
-        If IO.File.Exists(Environment.SystemDirectory + "\" + file) Then
-            Return Environment.SystemDirectory + "\" + file
-        End If
-
-        If IO.File.Exists(WinDir() + file) Then
-            Return WinDir() + file
-        End If
-
-        Return file
+    Private Shared Function FindInPath(file As String) As String
+        Return If(IO.File.Exists(Environment.SystemDirectory + "\" + file),
+                    Environment.SystemDirectory + "\" + file,
+                    If(IO.File.Exists(WinDir() + file),
+                        WinDir() + file,
+                        file))
     End Function
 
     Private Shared Function WinDir() As String
         Return Environment.SystemDirectory.Substring(0, Environment.SystemDirectory.LastIndexOf("\")) + "\"
     End Function
 
-    Public Shared Function GetExtensionDescription(ByVal keyData As String) As String
+    Public Shared Function GetExtensionDescription(keyData As String) As String
         Dim key As Microsoft.Win32.RegistryKey = My.Computer.Registry.ClassesRoot.OpenSubKey(keyData, False)
         If key IsNot Nothing AndAlso key.ValueCount > 0 AndAlso key.GetValue("") IsNot Nothing Then
             keyData = key.GetValue("").ToString
@@ -132,7 +128,7 @@ Public Class SearchItems
         Return keyData
     End Function
 
-    Public Sub RemoveAt(ByVal index As Integer) Implements IList(Of SearchItem).RemoveAt
+    Public Sub RemoveAt(index As Integer) Implements IList(Of SearchItem).RemoveAt
         mCol.RemoveAt(index)
     End Sub
 

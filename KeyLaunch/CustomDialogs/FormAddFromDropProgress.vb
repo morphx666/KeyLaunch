@@ -1,15 +1,15 @@
-Public Class frmAddFromDropProgress
-    Private Sub frmAddFromDropProgress_Load(ByVal sender As Object, ByVal e As EventArgs) Handles MyBase.Load
+Public Class FormAddFromDropProgress
+    Private Sub FormAddFromDropProgress_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Me.SetStyle(ControlStyles.AllPaintingInWmPaint, True)
         Me.SetStyle(ControlStyles.OptimizedDoubleBuffer, True)
         Me.SetStyle(ControlStyles.UserPaint, True)
         Me.DoubleBuffered = True
     End Sub
 
-    Private Sub frmAddFromDropProgress_Paint(ByVal sender As Object, ByVal e As PaintEventArgs) Handles Me.Paint
+    Private Sub FormAddFromDropProgress_Paint(sender As Object, e As PaintEventArgs) Handles Me.Paint
         With e.Graphics
             .DrawRectangle(Pens.DarkGray, 0, 0, e.ClipRectangle.Right - 1, e.ClipRectangle.Bottom - 1)
-            .DrawLine(Pens.DarkGray, 0, pnlInfo.Bottom, e.ClipRectangle.Right - 1, pnlInfo.Bottom)
+            .DrawLine(Pens.DarkGray, 0, PanelInfo.Bottom, e.ClipRectangle.Right - 1, PanelInfo.Bottom)
         End With
     End Sub
 End Class

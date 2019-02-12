@@ -13,8 +13,8 @@ Public Class ShellLink
     ''' <summary>
     ''' Shell link object's identifier.
     ''' </summary>
-    Private shellLinkType As Type = Type.GetTypeFromCLSID(New Guid(&H21401, 0, 0, &HC0, 0, 0, 0, 0, 0, 0, &H46))
-    Private slObject As Object = Activator.CreateInstance(shellLinkType)
+    Private ReadOnly shellLinkType As Type = Type.GetTypeFromCLSID(New Guid(&H21401, 0, 0, &HC0, 0, 0, 0, 0, 0, 0, &H46))
+    Private ReadOnly slObject As Object = Activator.CreateInstance(shellLinkType)
     Private shellLinkW As IShellLinkW = CType(slObject, IShellLinkW)
     Private shellLinkA As IShellLinkA = CType(slObject, IShellLinkA)
 
@@ -203,7 +203,7 @@ Public Class ShellLink
     ''' Either the calls to unmanaged code are restricted or the shell link
     ''' file cannot be read.
     ''' </exception>
-    <SecurityPermission(SecurityAction.Demand, UnmanagedCode:=True)> _
+    <SecurityPermission(SecurityAction.Demand, UnmanagedCode:=True)>
     Public Sub Load(ByVal linkFileName As String)
         'If linkFileName = "" Then
         '    Throw New ArgumentNullException("linkFileName", "The name of the link file cannot be null")
@@ -385,11 +385,11 @@ Public Class ShellLink
 
     <StructLayout(LayoutKind.Sequential)> _
     Private Structure SHFileInfo
-        Private hIcon As IntPtr
-        Private iIcon As IntPtr
+        Private ReadOnly hIcon As IntPtr
+        Private ReadOnly iIcon As IntPtr
         Private dwAttributes As Integer
-        <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=260)> Private szDisplayName As String
-        <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=80)> Private szTypeName As String
+        <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=260)> Private ReadOnly szDisplayName As String
+        <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=80)> Private ReadOnly szTypeName As String
 
         Friend Property Attributes() As Integer
             Get
@@ -403,30 +403,30 @@ Public Class ShellLink
 
     <StructLayout(LayoutKind.Sequential, CharSet:=CharSet.Ansi)> _
     Private Structure Win32FindDataA
-        Private dwFileAttributes As UInteger
+        Private ReadOnly dwFileAttributes As UInteger
         Private ftCreationTime As ComTypes.FILETIME
         Private ftLastAccessTime As ComTypes.FILETIME
         Private ftLastWriteTime As ComTypes.FILETIME
-        Private nFileSizeHigh As UInteger
-        Private nFileSizeLow As UInteger
-        Private dwReserved0 As UInteger
-        Private dwReserved1 As UInteger
-        <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=260)> Private cFileName As String
-        <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=14)> Private cAlternateFileName As String
+        Private ReadOnly nFileSizeHigh As UInteger
+        Private ReadOnly nFileSizeLow As UInteger
+        Private ReadOnly dwReserved0 As UInteger
+        Private ReadOnly dwReserved1 As UInteger
+        <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=260)> Private ReadOnly cFileName As String
+        <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=14)> Private ReadOnly cAlternateFileName As String
     End Structure
 
     <StructLayout(LayoutKind.Sequential, CharSet:=CharSet.Unicode)> _
     Private Structure Win32FindDataW
-        Private dwFileAttributes As UInteger
+        Private ReadOnly dwFileAttributes As UInteger
         Private ftCreationTime As ComTypes.FILETIME
         Private ftLastAccessTime As ComTypes.FILETIME
         Private ftLastWriteTime As ComTypes.FILETIME
-        Private nFileSizeHigh As UInteger
-        Private nFileSizeLow As UInteger
-        Private dwReserved0 As UInteger
-        Private dwReserved1 As UInteger
-        <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=260)> Private cFileName As String
-        <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=14)> Private cAlternateFileName As String
+        Private ReadOnly nFileSizeHigh As UInteger
+        Private ReadOnly nFileSizeLow As UInteger
+        Private ReadOnly dwReserved0 As UInteger
+        Private ReadOnly dwReserved1 As UInteger
+        <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=260)> Private ReadOnly cFileName As String
+        <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=14)> Private ReadOnly cAlternateFileName As String
     End Structure
 
     <ComImport()> _

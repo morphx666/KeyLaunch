@@ -1,45 +1,32 @@
 Public Class ListViewComparer
     Implements IComparer
 
-    Private m_ColumnNumber As Integer
-    Private m_SortOrder As SortOrder
+    Private ReadOnly mColumnNumber As Integer
+    Private ReadOnly mSortOrder As SortOrder
 
-    Public Sub New(ByVal column_number As Integer, ByVal _
-        sort_order As SortOrder)
-        m_ColumnNumber = column_number
-        m_SortOrder = sort_order
+    Public Sub New(column_number As Integer, sort_order As SortOrder)
+        mColumnNumber = column_number
+        mSortOrder = sort_order
     End Sub
 
     ' Compare the items in the appropriate column
     ' for objects x and y.
-    Public Function Compare(ByVal x As Object, ByVal y As _
-        Object) As Integer Implements _
-        IComparer.Compare
-        Dim item_x As ListViewItem = DirectCast(x, _
-            ListViewItem)
-        Dim item_y As ListViewItem = DirectCast(y, _
-            ListViewItem)
+    Public Function Compare(x As Object, y As Object) As Integer Implements IComparer.Compare
+        Dim item_x As ListViewItem = DirectCast(x, ListViewItem)
+        Dim item_y As ListViewItem = DirectCast(y, ListViewItem)
 
         ' Get the sub-item values.
-        Dim string_x As String
-        If item_x.SubItems.Count <= m_ColumnNumber Then
-            string_x = ""
-        Else
-            string_x = item_x.SubItems(m_ColumnNumber).Text
-        End If
+        Dim string_x As String = If(item_x.SubItems.Count <= mColumnNumber,
+                                        "",
+                                        item_x.SubItems(mColumnNumber).Text)
 
-        Dim string_y As String
-        If item_y.SubItems.Count <= m_ColumnNumber Then
-            string_y = ""
-        Else
-            string_y = item_y.SubItems(m_ColumnNumber).Text
-        End If
+        Dim string_y As String = If(item_y.SubItems.Count <= mColumnNumber,
+                                        "",
+                                        item_y.SubItems(mColumnNumber).Text)
 
         ' Compare them.
-        If m_SortOrder = SortOrder.Ascending Then
-            Return String.Compare(string_x, string_y)
-        Else
-            Return String.Compare(string_y, string_x)
-        End If
+        Return If(mSortOrder = SortOrder.Ascending,
+                    String.Compare(string_x, string_y),
+                    String.Compare(string_y, string_x))
     End Function
 End Class

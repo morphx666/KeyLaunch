@@ -10,7 +10,7 @@ Public Class KLListViewItemsCollection
 
     Private mCol As List(Of KLListViewItem)
 
-    Private parentItem As KLListViewItem
+    Private ReadOnly parentItem As KLListViewItem
     Public Event Changed(ByVal sender As KLListViewItemsCollection, ByVal reason As ChangeEventConstants)
 
     Private Sub SubitemsChanged(ByVal sender As KLListViewItemsCollection, ByVal reason As ChangeEventConstants)

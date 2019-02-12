@@ -151,7 +151,7 @@ Public Class HLSRGB
             Dim gnorm As Single = (maxval - mGreen) / mdiff
             Dim bnorm As Single = (maxval - mBlue) / mdiff
 
-            mSaturation = IIf(mLuminance <= 0.5F, (mdiff / msum), mdiff / (510.0F - msum))
+            mSaturation = If(mLuminance <= 0.5F, (mdiff / msum), mdiff / (510.0F - msum))
 
             If mRed = maxval Then mHue = 60.0F * (6.0F + bnorm - gnorm)
             If mGreen = maxval Then mHue = 60.0F * (2.0F + rnorm - bnorm)
@@ -167,13 +167,9 @@ Public Class HLSRGB
             mBlue = mRed
         Else
             Dim rm1 As Single
-            Dim rm2 As Single
-
-            If mLuminance <= 0.5F Then
-                rm2 = mLuminance + mLuminance * mSaturation
-            Else
-                rm2 = mLuminance + mSaturation - mLuminance * mSaturation
-            End If
+            Dim rm2 = If(mLuminance <= 0.5F,
+                            mLuminance + mLuminance * mSaturation,
+                            mLuminance + mSaturation - mLuminance * mSaturation)
             rm1 = 2.0F * mLuminance - rm2
             mRed = ToRGB1(rm1, rm2, mHue + 120.0F)
             mGreen = ToRGB1(rm1, rm2, mHue)

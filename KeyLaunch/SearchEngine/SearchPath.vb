@@ -64,11 +64,7 @@ Public Class SearchPath
 
     Public Property FirendlyName() As String
         Get
-            If mFriendlyName = "" Then
-                Return ShortPathName
-            Else
-                Return mFriendlyName
-            End If
+            Return If(mFriendlyName = "", ShortPathName, mFriendlyName)
         End Get
         Set(ByVal value As String)
             mFriendlyName = value

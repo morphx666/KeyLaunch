@@ -1,7 +1,7 @@
 Imports System.ComponentModel
 
 Public Class KLListView
-    Private WithEvents mItems As KLListViewItemsCollection
+    Private WithEvents LvItems As KLListViewItemsCollection
 
     Private mGridColor As Color
     Private isRendering As Boolean
@@ -45,14 +45,13 @@ Public Class KLListView
         Me.SetStyle(ControlStyles.ResizeRedraw, True)
         MyBase.DoubleBuffered = True
 
-        mItems = New KLListViewItemsCollection(Nothing)
-        vsBar.Visible = False
-        vsBar.SmallChange = 1
-        vsBar.LargeChange = 1
+        LvItems = New KLListViewItemsCollection(Nothing)
+        VScrollBarItem.Visible = False
+        VScrollBarItem.SmallChange = 1
+        VScrollBarItem.LargeChange = 1
         scrollBarVisibleCount = -1
 
-        itemStringFormat = New StringFormat(StringFormatFlags.LineLimit)
-        itemStringFormat.Trimming = StringTrimming.EllipsisCharacter
+        itemStringFormat = New StringFormat(StringFormatFlags.LineLimit) With {.Trimming = StringTrimming.EllipsisCharacter}
 
         AddHandler Me.MouseWheel, AddressOf HandleMouseWheel
 
@@ -75,13 +74,13 @@ Public Class KLListView
 
     Public ReadOnly Property ScrollbarIsVisible() As Boolean
         Get
-            Return vsBar.Visible
+            Return VScrollBarItem.Visible
         End Get
     End Property
 
     Public ReadOnly Property ScrollbarWidth() As Integer
         Get
-            Return IIf(vsBar.Visible, vsBar.Width, 0)
+            Return If(VScrollBarItem.Visible, VScrollBarItem.Width, 0)
         End Get
     End Property
 
@@ -99,7 +98,7 @@ Public Class KLListView
 
     Public ReadOnly Property Items() As KLListViewItemsCollection
         Get
-            Return mItems
+            Return LvItems
         End Get
     End Property
 
@@ -120,10 +119,10 @@ Public Class KLListView
 
     Public Property ScrollPosition() As Integer
         Get
-            Return vsBar.Value
+            Return VScrollBarItem.Value
         End Get
         Set(ByVal value As Integer)
-            If value >= 0 And value <= vsBar.Maximum Then vsBar.Value = value
+            If value >= 0 And value <= VScrollBarItem.Maximum Then VScrollBarItem.Value = value
         End Set
     End Property
 
@@ -141,8 +140,8 @@ Public Class KLListView
 
     Public Function ScrollDown() As Boolean
         Try
-            If vsBar.Value + (scrollBarVisibleCount - 1) < vsBar.Maximum Then
-                vsBar.Value += 1
+            If VScrollBarItem.Value + (scrollBarVisibleCount - 1) < VScrollBarItem.Maximum Then
+                VScrollBarItem.Value += 1
                 Return True
             Else
                 Return False
@@ -154,8 +153,8 @@ Public Class KLListView
 
     Public Function ScrollUp() As Boolean
         Try
-            If vsBar.Value > 0 Then
-                vsBar.Value -= 1
+            If VScrollBarItem.Value > 0 Then
+                VScrollBarItem.Value -= 1
                 Return True
             Else
                 Return False
@@ -165,7 +164,7 @@ Public Class KLListView
         End Try
     End Function
 
-    <Category("Appearance"), DefaultValue(GetType(Color), "Color.White")> _
+    <Category("Appearance"), DefaultValue(GetType(Color), "Color.White")>
     Public Overrides Property BackColor() As Color
         Get
             Return MyBase.BackColor
@@ -175,7 +174,7 @@ Public Class KLListView
         End Set
     End Property
 
-    <Category("Appearance"), DefaultValue(GetType(Color), "Color.WhiteSmoke")> _
+    <Category("Appearance"), DefaultValue(GetType(Color), "Color.WhiteSmoke")>
     Public Property GridColor() As Color
         Get
             Return mGridColor
@@ -185,35 +184,33 @@ Public Class KLListView
         End Set
     End Property
 
-    Private Sub KLListView_MouseClick(ByVal sender As Object, ByVal e As MouseEventArgs) Handles Me.MouseClick
+    Private Sub KLListView_MouseClick(sender As Object, e As MouseEventArgs) Handles Me.MouseClick
         If mSelectedItem IsNot Nothing Then mSelectedItem.IsSelected = False
         mMouseClickAt = e.Y
 
-        If e.X < Me.Width - dirDisplayWidth - 16 Then
-            selectColMode = SelectColConstants.Item
-        Else
-            selectColMode = SelectColConstants.Folder
-        End If
+        selectColMode = If(e.X < Me.Width - dirDisplayWidth - 16,
+                            SelectColConstants.Item,
+                            SelectColConstants.Folder)
 
         RepaintControl()
     End Sub
 
-    Private Sub KLListView_Paint(ByVal sender As Object, ByVal e As PaintEventArgs) Handles Me.Paint
+    Private Sub KLListView_Paint(sender As Object, e As PaintEventArgs) Handles Me.Paint
         RenderControl(e.Graphics, e.ClipRectangle)
     End Sub
 
-    Private Sub vsBar_KeyDown(ByVal sender As Object, ByVal e As KeyEventArgs) Handles vsBar.KeyDown
+    Private Sub VScrollBarItem_KeyDown(sender As Object, e As KeyEventArgs) Handles VScrollBarItem.KeyDown
         e.Handled = True
 
         Me.OnKeyDown(e)
     End Sub
 
-    Private Sub vsBar_ValueChanged(ByVal sender As Object, ByVal e As EventArgs) Handles vsBar.ValueChanged
+    Private Sub VScrollBarItem_ValueChanged(sender As Object, e As EventArgs) Handles VScrollBarItem.ValueChanged
         RepaintControl()
     End Sub
 
-    Private Sub HandleMouseWheel(ByVal sender As Object, ByVal e As MouseEventArgs)
-        If vsBar.Visible Then
+    Private Sub HandleMouseWheel(sender As Object, e As MouseEventArgs)
+        If VScrollBarItem.Visible Then
             If e.Delta < 0 Then
                 ScrollDown()
             Else
@@ -252,10 +249,10 @@ Public Class KLListView
         mFirstVisibleItem = Nothing
         mDoRender = (g IsNot Nothing)
 
-        RenderItems(g, r1, mItems, p)
+        RenderItems(g, r1, LvItems, p)
 
         If (mItemsTotalCount > mItemsVisibleCount) OrElse (p.Y >= r.Height) Then
-            With vsBar
+            With VScrollBarItem
                 If scrollBarVisibleCount = -1 Then scrollBarVisibleCount = mItemsVisibleCount
 
                 .Maximum = mItemsTotalCount + 4
@@ -263,7 +260,7 @@ Public Class KLListView
                 .Visible = True
             End With
         Else
-            With vsBar
+            With VScrollBarItem
                 If .Visible Then
                     .Visible = False
                     .Value = 0
@@ -294,7 +291,7 @@ Public Class KLListView
                     If item.IsSelected Then SelectedItem = item
                 End If
 
-                If mItemsVisibleCountTemp > vsBar.Value Then
+                If mItemsVisibleCountTemp > VScrollBarItem.Value Then
                     mItemsVisibleCount += 1
                     RenderItem(g, r, item, p)
 
@@ -335,11 +332,9 @@ Public Class KLListView
             If item.Bounds.IsEmpty Then
                 If item.SearchItem.ItemIcon Is Nothing Then Exit Sub
                 imgHeight = item.SearchItem.ItemIcon.Height
-                If item.IsSelected Then
-                    textHeight = g.MeasureString(item.SearchItem.Name(False), item.FontSelected, 0).ToSize.Height
-                Else
-                    textHeight = g.MeasureString(item.SearchItem.Name(False), item.Font, 0).ToSize.Height
-                End If
+                textHeight = If(item.IsSelected,
+                    g.MeasureString(item.SearchItem.Name(False), item.FontSelected, 0).ToSize.Height,
+                    g.MeasureString(item.SearchItem.Name(False), item.Font, 0).ToSize.Height)
                 item.Bounds = New Rectangle(p.X, p.Y, r.Width - p.X, Math.Max(imgHeight, textHeight) + 2)
             Else
                 item.Bounds = New Rectangle(p.X, p.Y, r.Width - p.X, item.Bounds.Height)
@@ -362,31 +357,31 @@ Public Class KLListView
             p.X += (item.SearchItem.ItemIcon.Width + 2)
 
             Dim rect As Rectangle = New Rectangle(p.X, p.Y + 2 + (imgHeight - textHeight) \ 2, item.Bounds.Width - p.X, item.Bounds.Height)
-                If item.IsSelected AndAlso selectColMode = SelectColConstants.Item Then
-                    g.DrawString(item.SearchItem.Name(False), item.Font, New SolidBrush(item.ForeColorSelected), rect, itemStringFormat)
-                Else
-                    g.DrawString(item.SearchItem.Name(False), item.Font, New SolidBrush(item.ForeColor), rect, itemStringFormat)
-                End If
-
-                rect.X = rect.Right + 8
-                rect.Width = dirDisplayWidth - 14
-                Dim linkTargetDir As String = ""
-                If item.SearchItem.IsLink Then linkTargetDir = " » " + item.SearchItem.LinkedFileInfo.Directory.Name
-                If item.IsSelected AndAlso selectColMode = SelectColConstants.Folder Then
-                    g.DrawString(item.SearchItem.FileInfo.Directory.Name + linkTargetDir, item.Font, New SolidBrush(item.ForeColorSelected), rect, itemStringFormat)
-                Else
-                    g.DrawString(item.SearchItem.FileInfo.Directory.Name + linkTargetDir, item.Font, Brushes.DarkOrange, rect, itemStringFormat)
-                End If
-
-                If mFirstVisibleItem Is Nothing Then
-                    mFirstVisibleItem = item
-                Else
-                    mLastVisibleItem = item
-                End If
+            If item.IsSelected AndAlso selectColMode = SelectColConstants.Item Then
+                g.DrawString(item.SearchItem.Name(False), item.Font, New SolidBrush(item.ForeColorSelected), rect, itemStringFormat)
+            Else
+                g.DrawString(item.SearchItem.Name(False), item.Font, New SolidBrush(item.ForeColor), rect, itemStringFormat)
             End If
+
+            rect.X = rect.Right + 8
+            rect.Width = dirDisplayWidth - 14
+            Dim linkTargetDir As String = ""
+            If item.SearchItem.IsLink Then linkTargetDir = " » " + item.SearchItem.LinkedFileInfo.Directory.Name
+            If item.IsSelected AndAlso selectColMode = SelectColConstants.Folder Then
+                g.DrawString(item.SearchItem.FileInfo.Directory.Name + linkTargetDir, item.Font, New SolidBrush(item.ForeColorSelected), rect, itemStringFormat)
+            Else
+                g.DrawString(item.SearchItem.FileInfo.Directory.Name + linkTargetDir, item.Font, Brushes.DarkOrange, rect, itemStringFormat)
+            End If
+
+            If mFirstVisibleItem Is Nothing Then
+                mFirstVisibleItem = item
+            Else
+                mLastVisibleItem = item
+            End If
+        End If
     End Sub
 
-    Private Sub CollectionChanged(ByVal sender As KLListViewItemsCollection, ByVal reason As KLListViewItemsCollection.ChangeEventConstants) Handles mItems.Changed
+    Private Sub CollectionChanged(ByVal sender As KLListViewItemsCollection, ByVal reason As KLListViewItemsCollection.ChangeEventConstants) Handles LvItems.Changed
         Select Case reason
             Case KLListViewItemsCollection.ChangeEventConstants.ItemAdded
                 mItemsTotalCount += 1
@@ -395,7 +390,7 @@ Public Class KLListView
             Case KLListViewItemsCollection.ChangeEventConstants.CollectionCleared
                 SelectedItem = Nothing
                 mItemsTotalCount = 0
-                ReCountItems(mItems)
+                ReCountItems(LvItems)
             Case KLListViewItemsCollection.ChangeEventConstants.ItemChanged
                 'Should call me.invalidate but, somehow, update the item in question only...
                 'Me.Invalidate()
@@ -424,7 +419,7 @@ Public Class KLListView
         If Not mIsRendering Then Me.Invalidate()
     End Sub
 
-    Public Sub HandleKeyboardNav(ByVal sender As Object, ByVal e As KeyEventArgs) Handles Me.KeyDown
+    Public Sub HandleKeyboardNav(sender As Object, e As KeyEventArgs) Handles Me.KeyDown
         Select Case e.KeyCode
             Case Keys.Up, Keys.Down
                 MoveUpDown(e.KeyCode)
@@ -462,7 +457,7 @@ Public Class KLListView
 
     Private Sub MoveUpDown(ByVal key As Keys, Optional ByVal repaint As Boolean = True)
         If mSelectedItem Is Nothing Then
-            For Each c As KLListViewItem In mItems
+            For Each c As KLListViewItem In LvItems
                 If c.SubItems.Count > 0 Then
                     SelectedItem = c.SubItems(0)
 
@@ -503,7 +498,7 @@ Public Class KLListView
                             End If
                             RenderControl(Nothing, Me.ClientRectangle, True)
                         Loop
-                        If vsBar.Value = 1 Then vsBar.Value = 0
+                        If VScrollBarItem.Value = 1 Then VScrollBarItem.Value = 0
                 End Select
 
                 mIsRendering = False
@@ -512,7 +507,7 @@ Public Class KLListView
         End If
     End Sub
 
-    Private Sub KLListView_Resize(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Resize
+    Private Sub KLListView_Resize(sender As Object, e As EventArgs) Handles Me.Resize
         SetDirAreaWidth()
     End Sub
 

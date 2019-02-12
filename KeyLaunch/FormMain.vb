@@ -4,9 +4,9 @@ Imports System.Threading
 Imports System.Security.Permissions
 Imports System.Runtime.InteropServices
 
-Public Class frmMain
-    Friend WithEvents mSearchEngine As SearchEngine = New SearchEngine()
-    Private WithEvents mKeyboardHook As KbdHookAPI = New KbdHookAPI()
+Public Class FormMain
+    Friend WithEvents SearchEngineApi As New SearchEngine()
+    Private WithEvents KeyboardHookApi As New KbdHookAPI()
 
     <Flags>
     Private Enum KnownFolderFlag
@@ -143,7 +143,7 @@ Public Class frmMain
     Private Const ValidChars As String = "!#$%&()+,-"
 
 #Region "frmMain Events"
-    Private Sub frmMain_Load(ByVal sender As Object, ByVal e As EventArgs) Handles MyBase.Load
+    Private Sub FormMain_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Me.Height = 0
         Me.Visible = False
         Me.SetStyle(ControlStyles.AllPaintingInWmPaint, True)
@@ -158,22 +158,19 @@ Public Class frmMain
         Me.MinimumSize = New Size(200, 0)
         Me.MaximumSize = New Size(Screen.GetWorkingArea(Me).Width, Screen.GetWorkingArea(Me).Height \ 2)
 
-        titleStringFormat = New StringFormat(StringFormatFlags.LineLimit)
-        titleStringFormat.Trimming = StringTrimming.EllipsisCharacter
-        queryStringFormat = New StringFormat()
-        queryStringFormat.Alignment = StringAlignment.Far
+        titleStringFormat = New StringFormat(StringFormatFlags.LineLimit) With {.Trimming = StringTrimming.EllipsisCharacter}
+        queryStringFormat = New StringFormat With {.Alignment = StringAlignment.Far}
 
         pnlCats.BackColor = Color.LightSlateGray
         pnlCats.Height = 0
-        lvCats.Columns(0).Width = lvCats.Width - 4
+        ListViewCats.Columns(0).Width = ListViewCats.Width - 4
         Dim catsFont As Font = New Font(Me.Font.FontFamily, 10, FontStyle.Regular, GraphicsUnit.Pixel)
-        lvCats.Font = catsFont
-        Dim imgList As ImageList = New ImageList()
-        imgList.ImageSize = New Size(1, 24)
-        lvCats.SmallImageList = imgList
+        ListViewCats.Font = catsFont
+        Dim imgList As ImageList = New ImageList With {.ImageSize = New Size(1, 24)}
+        ListViewCats.SmallImageList = imgList
         catAllCatsStringFormat.Alignment = StringAlignment.Center
 
-        lvFiles.AllowDrop = True
+        ListViewFiles.AllowDrop = True
 
         threadExpColCats = New Thread(AddressOf ExpandCollapseCats)
         threadExpColCats.Start()
@@ -188,14 +185,14 @@ Public Class frmMain
         mSearchState = SearchStateConstants.Idle
         resetSearchStateTimer = New Timer(New TimerCallback(AddressOf ResetSearchState), Nothing, Timeout.Infinite, Timeout.Infinite)
 #If Not DEBUG Then
-        mKeyboardHook.HookKeyboard()
+        KeyboardHookApi.HookKeyboard()
 #Else
         AddHandler Me.KeyDown, AddressOf HandleKeyDown
         AddHandler lvFiles.KeyDown, AddressOf HandleKeyDown
 #End If
     End Sub
 
-    Private Sub frmMain_Activated(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Activated
+    Private Sub FormMain_Activated(sender As Object, e As EventArgs) Handles Me.Activated
         mHasFocus = True
         If mainExpColMode = ExpColConstants.Expanding Then
             mainExpColMode = ExpColConstants.Expanded
@@ -206,10 +203,10 @@ Public Class frmMain
         End If
         Me.Invalidate()
 
-        If mainExpColMode = ExpColConstants.Expanded Then mKeyboardHook.CaptureAllKeys = True
+        If mainExpColMode = ExpColConstants.Expanded Then KeyboardHookApi.CaptureAllKeys = True
     End Sub
 
-    Private Sub frmMain_Deactivate(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Deactivate
+    Private Sub FormMain_Deactivate(sender As Object, e As EventArgs) Handles Me.Deactivate
         mHasFocus = mIgnoreFocus
         If Me.Visible Then
             SetMainColor()
@@ -218,26 +215,26 @@ Public Class frmMain
             If mHasFocus = False AndAlso mainExpColMode = ExpColConstants.Expanded Then
                 If Me.Preferences.hideOnFocusLost Then ToggleExpColMain()
             End If
-            mKeyboardHook.CaptureAllKeys = False
+            KeyboardHookApi.CaptureAllKeys = False
         End If
     End Sub
 
-    Private Sub frmMain_MouseDown(ByVal sender As Object, ByVal e As MouseEventArgs) Handles Me.MouseDown
+    Private Sub FormMain_MouseDown(sender As Object, e As MouseEventArgs) Handles Me.MouseDown
         Select Case e.Button
-            Case Windows.Forms.MouseButtons.Left
+            Case MouseButtons.Left
                 If e.Y <= Preferences.mainTitleHeight Then
                     If e.X < 10 Then
                         mouseMode = MouseModeConstants.ResizingHorizontally
                     Else
                         If e.X >= Me.Width - 30 And e.X <= Me.Width - 18 Then
-                            mMain.Show(Me, New Point(Me.Width - 20 - 8, Preferences.mainTitleHeight))
+                            ContextMenuMain.Show(Me, New Point(Me.Width - 20 - 8, Preferences.mainTitleHeight))
                         Else
                             mouseMode = MouseModeConstants.Dragging
                         End If
                     End If
                 Else
-                    If (e.Y >= lvFiles.Top AndAlso e.Y <= lvFiles.Bottom) Then
-                        Dim d As Integer = CInt(lvFiles.Right - lvFiles.ScrollbarWidth - lvFiles.Width * (lvFiles.DirAreaWidthPercentage / 100))
+                    If (e.Y >= ListViewFiles.Top AndAlso e.Y <= ListViewFiles.Bottom) Then
+                        Dim d As Integer = CInt(ListViewFiles.Right - ListViewFiles.ScrollbarWidth - ListViewFiles.Width * (ListViewFiles.DirAreaWidthPercentage / 100))
                         If e.X >= d - 1 And e.X <= d + 2 Then
                             mouseMode = MouseModeConstants.ResizingDirArea
                         End If
@@ -247,7 +244,7 @@ Public Class frmMain
                                 ToggleExpColCats()
                             End If
                         Else
-                            If (e.Y >= lvFiles.Bottom AndAlso e.Y <= Me.Height) AndAlso (e.X >= lvFiles.Left AndAlso e.X <= lvFiles.Right) Then
+                            If (e.Y >= ListViewFiles.Bottom AndAlso e.Y <= Me.Height) AndAlso (e.X >= ListViewFiles.Left AndAlso e.X <= ListViewFiles.Right) Then
                                 mouseMode = MouseModeConstants.ResizingVertically
                             End If
                         End If
@@ -255,11 +252,11 @@ Public Class frmMain
                 End If
                 dragClickPos = New Point(e.X, e.Y)
             Case Windows.Forms.MouseButtons.Right
-                If e.Y <= Preferences.mainTitleHeight Then mMain.Show(Me, e.X, e.Y)
+                If e.Y <= Preferences.mainTitleHeight Then ContextMenuMain.Show(Me, e.X, e.Y)
         End Select
     End Sub
 
-    Private Sub frmMain_MouseMove(ByVal sender As Object, ByVal e As MouseEventArgs) Handles Me.MouseMove
+    Private Sub FormMain_MouseMove(sender As Object, e As MouseEventArgs) Handles Me.MouseMove
         Select Case mouseMode
             Case MouseModeConstants.Dragging
                 Dim newLeft As Integer = Me.Left + (e.X - dragClickPos.X)
@@ -280,51 +277,43 @@ Public Class frmMain
                     dragClickPos.Y = e.Y
                 End If
             Case MouseModeConstants.ResizingDirArea
-                lvFiles.DirAreaWidthPercentage = CInt((lvFiles.Right - lvFiles.ScrollbarWidth - e.X) / lvFiles.Width * 100)
+                ListViewFiles.DirAreaWidthPercentage = CInt((ListViewFiles.Right - ListViewFiles.ScrollbarWidth - e.X) / ListViewFiles.Width * 100)
             Case MouseModeConstants.Normal
                 If e.Y <= 20 Then
-                    If e.X < 10 Then
-                        Me.Cursor = Cursors.SizeWE
-                    Else
-                        If e.X >= Me.Width - 30 And e.X <= Me.Width - 18 Then
-                            Me.Cursor = Cursors.Hand
-                        Else
-                            Me.Cursor = Cursors.Default
-                        End If
-                    End If
+                    Me.Cursor = If(e.X < 10,
+                                    Cursors.SizeWE,
+                                    If(e.X >= Me.Width - 30 And e.X <= Me.Width - 18,
+                                        Cursors.Hand,
+                                        Cursors.Default))
                 Else
-                    If (e.Y >= lvFiles.Top AndAlso e.Y <= lvFiles.Bottom) Then
-                        Dim d As Integer = CInt(lvFiles.Right - lvFiles.ScrollbarWidth - lvFiles.Width * (lvFiles.DirAreaWidthPercentage / 100))
-                        If e.X >= d - 1 And e.X <= d + 2 Then
-                            Me.Cursor = Cursors.VSplit
-                        Else
-                            Me.Cursor = Cursors.Default
-                        End If
+                    If (e.Y >= ListViewFiles.Top AndAlso e.Y <= ListViewFiles.Bottom) Then
+                        Dim d As Integer = CInt(ListViewFiles.Right - ListViewFiles.ScrollbarWidth - ListViewFiles.Width * (ListViewFiles.DirAreaWidthPercentage / 100))
+                        Me.Cursor = If(e.X >= d - 1 And e.X <= d + 2,
+                                        Cursors.VSplit,
+                                        Cursors.Default)
                     Else
-                        If (e.Y >= lvFiles.Bottom AndAlso e.Y <= Me.Height) Then
-                            Me.Cursor = Cursors.SizeNS
-                        Else
-                            Me.Cursor = Cursors.Default
-                        End If
+                        Me.Cursor = If((e.Y >= ListViewFiles.Bottom AndAlso e.Y <= Me.Height),
+                                        Cursors.SizeNS,
+                                        Cursors.Default)
                     End If
                 End If
         End Select
     End Sub
 
-    Private Sub frmMain_MouseUp(ByVal sender As Object, ByVal e As MouseEventArgs) Handles Me.MouseUp
+    Private Sub FormMain_MouseUp(sender As Object, e As MouseEventArgs) Handles Me.MouseUp
         mouseMode = MouseModeConstants.Normal
         Me.Cursor = Cursors.Default
     End Sub
 
-    Private Sub frmMain_Resize(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Resize
-        If lvFiles.Bottom > Me.Height - (mBottomHandleHeight + 2) Then
-            lvFiles.Height = Me.Height - (mBottomHandleHeight + 2) - lvFiles.Top
+    Private Sub FormMain_Resize(sender As Object, e As EventArgs) Handles Me.Resize
+        If ListViewFiles.Bottom > Me.Height - (mBottomHandleHeight + 2) Then
+            ListViewFiles.Height = Me.Height - (mBottomHandleHeight + 2) - ListViewFiles.Top
         End If
 
         SetMainColor() 'SetRects()
     End Sub
 
-    Private Sub frmMain_Paint(ByVal sender As Object, ByVal e As PaintEventArgs) Handles Me.Paint
+    Private Sub FormMain_Paint(sender As Object, e As PaintEventArgs) Handles Me.Paint
         'e.Graphics.Clear(Me.BackColor)
 
         e.Graphics.SmoothingMode = Drawing2D.SmoothingMode.AntiAlias
@@ -337,7 +326,7 @@ Public Class frmMain
         If e.ClipRectangle.Height > Preferences.mainTitleHeight Then RenderBottom(e.Graphics)
     End Sub
 
-    Private Sub frmMain_FormClosing(ByVal sender As Object, ByVal e As FormClosingEventArgs) Handles Me.FormClosing
+    Private Sub FormMain_FormClosing(sender As Object, e As FormClosingEventArgs) Handles Me.FormClosing
         If e.CloseReason = CloseReason.UserClosing Then
             If MsgBox("Are you sure you want to exit KeyLaunch?", MsgBoxStyle.YesNo Or MsgBoxStyle.Question, "Confirm Exit KeyLaunch") = MsgBoxResult.No Then
                 e.Cancel = True
@@ -346,8 +335,8 @@ Public Class frmMain
         End If
 
         StopResetSearchTimer()
-        mKeyboardHook.UnhookKeyboard()
-        mSearchEngine.Abort()
+        KeyboardHookApi.UnhookKeyboard()
+        SearchEngineApi.Abort()
 
         catsExpColMode = ExpColConstants.Abort
         mainExpColMode = ExpColConstants.Abort
@@ -424,9 +413,9 @@ Public Class frmMain
     Private Sub RenderSelectedItem(ByVal g As Graphics)
         With g
             Dim text As String
-            If lvFiles.SelectedItem IsNot Nothing Then
-                text = lvFiles.SelectedItem.SearchItem.Name(False)
-                .DrawIcon(lvFiles.SelectedItem.SearchItem.ItemIcon, 14, titleTextArea.Y)
+            If ListViewFiles.SelectedItem IsNot Nothing Then
+                text = ListViewFiles.SelectedItem.SearchItem.Name(False)
+                .DrawIcon(ListViewFiles.SelectedItem.SearchItem.ItemIcon, 14, titleTextArea.Y)
             Else
                 text = "KeyLaunch 3.0"
                 .DrawImage(My.Resources.ql, New Rectangle(14, titleTextArea.Y, 16, 16))
@@ -442,11 +431,11 @@ Public Class frmMain
             .FillRectangle(bottomBrush1, bottomRect1)
             .FillRectangle(bottomBrush2, bottomRect2)
 
-            If mSearchEngine.Progess > 0 Then
+            If SearchEngineApi.Progess > 0 Then
                 'Using b = New SolidBrush(Color.FromArgb(128, Preferences.mainColor))
                 Using b = New SolidBrush(Color.FromArgb(128, Color.Red))
                     Dim r As Rectangle = New Rectangle(bottomRect1.Left, bottomRect1.Top, bottomRect1.Width, bottomRect1.Height + bottomRect2.Height)
-                    .FillRectangle(b, r.X, r.Y, CInt(r.Width * (mSearchEngine.Progess / 100)), r.Height)
+                    .FillRectangle(b, r.X, r.Y, CInt(r.Width * (SearchEngineApi.Progess / 100)), r.Height)
                 End Using
             End If
 
@@ -466,7 +455,7 @@ Public Class frmMain
     End Sub
 
     Private Sub SetBottomRects()
-        bottomRect1 = New Rectangle(lvFiles.Left + 1, lvFiles.Bottom - 1, lvFiles.Width - 3, CInt(mBottomHandleHeight / 1.5))
+        bottomRect1 = New Rectangle(ListViewFiles.Left + 1, ListViewFiles.Bottom - 1, ListViewFiles.Width - 3, CInt(mBottomHandleHeight / 1.5))
         bottomRect2 = New Rectangle(bottomRect1.Left, bottomRect1.Bottom, bottomRect1.Width, mBottomHandleHeight - bottomRect1.Height)
     End Sub
 
@@ -529,16 +518,16 @@ Public Class frmMain
 #End Region
 
 #Region "Main Menu Handling"
-    Private Sub mMain_Opening(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles mMain.Opening
-        mMainOpenKeyLaunch.Visible = (mainExpColMode = ExpColConstants.Collapsed)
-        mMainSep01.Visible = (mainExpColMode = ExpColConstants.Collapsed)
+    Private Sub ContextMenuMain_Opening(sender As Object, e As System.ComponentModel.CancelEventArgs) Handles ContextMenuMain.Opening
+        ContextMenuMainOpenKeyLaunch.Visible = (mainExpColMode = ExpColConstants.Collapsed)
+        ContextMenuMainSep01.Visible = (mainExpColMode = ExpColConstants.Collapsed)
     End Sub
 
-    Private Sub mMainSearchPreferences_Click(ByVal sender As Object, ByVal e As EventArgs) Handles mMainSearchPreferences.Click
-        Dim f As frmSetup = New frmSetup
+    Private Sub ContextMenuMainSearchPreferences_Click(sender As Object, e As EventArgs) Handles ContextMenuMainSearchPreferences.Click
+        Dim f As FormSetup = New FormSetup
 
         mDontClearList = True
-        mSearchEngine.Abort()
+        SearchEngineApi.Abort()
 
         SaveSearchPreferences()
         If f.ShowDialog(Me) = Windows.Forms.DialogResult.Cancel Then
@@ -551,15 +540,15 @@ Public Class frmMain
         UpdateCacheAndShortcuts()
     End Sub
 
-    Private Sub mMainExit_Click(ByVal sender As Object, ByVal e As EventArgs) Handles mMainExit.Click
+    Private Sub ContextMenuMainExit_Click(sender As Object, e As EventArgs) Handles ContextMenuMainExit.Click
         Me.Close()
     End Sub
 
-    Private Sub mMainOptions_Click(ByVal sender As Object, ByVal e As EventArgs) Handles mMainOptions.Click
-        Dim f As frmOptions = New frmOptions
+    Private Sub ContextMenuMainOptions_Click(sender As Object, e As EventArgs) Handles ContextMenuMainOptions.Click
+        Dim f As New FormOptions()
 
         mDontClearList = True
-        mSearchEngine.Abort()
+        SearchEngineApi.Abort()
 
         SaveKLPreferences()
         mIgnoreFocus = True
@@ -571,15 +560,15 @@ Public Class frmMain
         mIgnoreFocus = False
     End Sub
 
-    Private Sub mMainOpenKeyLaunch_Click(ByVal sender As Object, ByVal e As EventArgs) Handles mMainOpenKeyLaunch.Click
+    Private Sub ContextMenuMainOpenKeyLaunch_Click(sender As Object, e As EventArgs) Handles ContextMenuMainOpenKeyLaunch.Click
         ShowKL(False)
     End Sub
 
-    Private Sub mMainAbout_Click(ByVal sender As Object, ByVal e As EventArgs) Handles mMainAbout.Click
-        Dim f As frmAbout = New frmAbout
+    Private Sub ContextMenuMainAbout_Click(sender As Object, e As EventArgs) Handles ContextMenuMainAbout.Click
+        Dim f As FormAbout = New FormAbout
 
         mDontClearList = True
-        mSearchEngine.Abort()
+        SearchEngineApi.Abort()
 
         f.ShowDialog()
     End Sub
@@ -589,8 +578,8 @@ Public Class frmMain
     Private Sub ToggleExpColCats()
         Select Case catsExpColMode
             Case ExpColConstants.Collapsed, ExpColConstants.Collapsing
-                lvCats.Items(selCategoryLVIndex).Selected = True
-                lvCats.Focus()
+                ListViewCats.Items(selCategoryLVIndex).Selected = True
+                ListViewCats.Focus()
                 catsAnimSpeed = 1
                 catsExpColMode = ExpColConstants.Expanding
             Case ExpColConstants.Expanded, ExpColConstants.Expanding
@@ -604,16 +593,16 @@ Public Class frmMain
             Case ExpColConstants.Collapsed, ExpColConstants.Collapsing
                 mainAnimSpeed = 1
                 mainExpColMode = ExpColConstants.Expanding
-                mKeyboardHook.CaptureAllKeys = True
+                KeyboardHookApi.CaptureAllKeys = True
                 Me.Focus()
-                lvFiles.SelectionColumnMode = KLListView.SelectColConstants.Item
+                ListViewFiles.SelectionColumnMode = KLListView.SelectColConstants.Item
             Case ExpColConstants.Expanded, ExpColConstants.Expanding
                 mainAnimSpeed = 1
                 mainExpColMode = ExpColConstants.Collapsing
-                mSearchEngine.Abort()
+                SearchEngineApi.Abort()
                 lastCatsMode = catsExpColMode
                 If catsExpColMode = ExpColConstants.Expanded Then ToggleExpColCats()
-                mKeyboardHook.CaptureAllKeys = False
+                KeyboardHookApi.CaptureAllKeys = False
         End Select
     End Sub
 
@@ -672,7 +661,7 @@ Public Class frmMain
         Select Case mainExpColMode
             Case ExpColConstants.Expanded
                 Me.Activate()
-                lvFiles.Focus()
+                ListViewFiles.Focus()
                 If lastCatsMode = ExpColConstants.Expanded Then ToggleExpColCats()
             Case ExpColConstants.Collapsed
                 Me.Visible = False
@@ -682,9 +671,9 @@ Public Class frmMain
     Private Sub ChangeCatsHeight(ByVal value As Integer)
         pnlCats.Height = value
         catsAnimSpeed += 2
-        Me.Invalidate(New Region(New Rectangle(0, lvCats.Top, lvFiles.Left, lvCats.Height + 80)), False)
+        Me.Invalidate(New Region(New Rectangle(0, ListViewCats.Top, ListViewFiles.Left, ListViewCats.Height + 80)), False)
 
-        If catsExpColMode = ExpColConstants.Collapsed Then lvFiles.Focus()
+        If catsExpColMode = ExpColConstants.Collapsed Then ListViewFiles.Focus()
     End Sub
 
     Private Sub SetMainHeight(ByVal h As Integer)
@@ -703,30 +692,30 @@ Public Class frmMain
     End Sub
 
     Private Sub LaunchSelectedItem()
-        If lvFiles.SelectedItem Is Nothing Then
+        If ListViewFiles.SelectedItem Is Nothing Then
             enqueENTER = True
         Else
-            If mSearchEngine.State = KeyLaunch.SearchEngine.StateConstants.Searching Then
+            If SearchEngineApi.State = KeyLaunch.SearchEngine.StateConstants.Searching Then
                 mDontClearList = True
-                mSearchEngine.Abort()
+                SearchEngineApi.Abort()
             End If
 
-            Select Case lvFiles.SelectionColumnMode
+            Select Case ListViewFiles.SelectionColumnMode
                 Case KLListView.SelectColConstants.Item
                     If Preferences.cachedResults.ContainsKey(searchQuery) Then
-                        Preferences.cachedResults(searchQuery) = New Object() {lvFiles.SelectedItem.SearchItem, lvFiles.SelectedItem.Parent.CategoryItem}
+                        Preferences.cachedResults(searchQuery) = New Object() {ListViewFiles.SelectedItem.SearchItem, ListViewFiles.SelectedItem.Parent.CategoryItem}
                     Else
-                        Preferences.cachedResults.Add(searchQuery, New Object() {lvFiles.SelectedItem.SearchItem, lvFiles.SelectedItem.Parent.CategoryItem})
+                        Preferences.cachedResults.Add(searchQuery, New Object() {ListViewFiles.SelectedItem.SearchItem, ListViewFiles.SelectedItem.Parent.CategoryItem})
                     End If
-                    lvFiles.SelectedItem.Launch()
+                    ListViewFiles.SelectedItem.Launch()
                 Case KLListView.SelectColConstants.Folder
-                    If lvFiles.SelectedItem.SearchItem.IsLink Then
-                        Dim linkedFile As IO.FileInfo = lvFiles.SelectedItem.SearchItem.ResolveLink()
+                    If ListViewFiles.SelectedItem.SearchItem.IsLink Then
+                        Dim linkedFile As IO.FileInfo = ListViewFiles.SelectedItem.SearchItem.ResolveLink()
                         If linkedFile IsNot Nothing Then
                             KLListViewItem.OpenContainingFolder(linkedFile.DirectoryName)
                         End If
                     Else
-                        lvFiles.SelectedItem.OpenContainingFolder()
+                        ListViewFiles.SelectedItem.OpenContainingFolder()
                     End If
             End Select
 
@@ -750,25 +739,24 @@ Public Class frmMain
 
     Private Sub ResetKLListView(Optional ByVal resetCategories As Boolean = False)
         mSearchSucessful = False
-        lvFiles.ScrollPosition = 0
-        If lvFiles.Items.Count = 0 OrElse resetCategories Then
-            lvFiles.Items.Clear()
+        ListViewFiles.ScrollPosition = 0
+        If ListViewFiles.Items.Count = 0 OrElse resetCategories Then
+            ListViewFiles.Items.Clear()
 
             Dim category As KLListViewItem
-            For Each c As SearchCategory In mSearchEngine.Categories
-                category = New KLListViewItem(c, Nothing, lvFiles)
-                category.ForeColor = Color.DarkGray
+            For Each c As SearchCategory In SearchEngineApi.Categories
+                category = New KLListViewItem(c, Nothing, ListViewFiles) With {.ForeColor = Color.DarkGray}
 
-                lvFiles.Items.Add(category)
+                ListViewFiles.Items.Add(category)
             Next
         Else
-            For Each lvi As KLListViewItem In lvFiles.Items
+            For Each lvi As KLListViewItem In ListViewFiles.Items
                 lvi.SubItems.Clear()
             Next
         End If
     End Sub
 
-    Private Sub SearchEngine_Done() Handles mSearchEngine.Done
+    Private Sub SearchEngine_Done() Handles SearchEngineApi.Done
         If Not mSearchSucessful Then
             StopResetSearchTimer()
             mSearchState = SearchStateConstants.Searching
@@ -779,7 +767,7 @@ Public Class frmMain
         Me.Invalidate()
     End Sub
 
-    Private Sub SearchEngine_Aborted() Handles mSearchEngine.Aborted
+    Private Sub SearchEngine_Aborted() Handles SearchEngineApi.Aborted
         If mDontClearList Then
             mDontClearList = False
         Else
@@ -788,8 +776,8 @@ Public Class frmMain
         DoSearch()
     End Sub
 
-    Private Sub SearchEngine_MatchFound(ByVal searchItem As SearchItem, ByVal category As SearchCategory) Handles mSearchEngine.MatchFound
-        lvFiles.Invoke(New delAddNewItem(AddressOf AddNewItem), New Object() {searchItem, category, False})
+    Private Sub SearchEngine_MatchFound(ByVal searchItem As SearchItem, ByVal category As SearchCategory) Handles SearchEngineApi.MatchFound
+        ListViewFiles.Invoke(New delAddNewItem(AddressOf AddNewItem), New Object() {searchItem, category, False})
     End Sub
 
     Private Sub AddNewItem(ByVal searchItem As SearchItem, ByVal category As SearchCategory, ByVal autoSelect As Boolean)
@@ -799,7 +787,7 @@ Public Class frmMain
         mSearchSucessful = True
 
         If lastCategoryName <> category.Name Then
-            For Each c As KLListViewItem In lvFiles.Items
+            For Each c As KLListViewItem In ListViewFiles.Items
                 If c.CategoryItem.Name = category.Name Then
                     lastCategoryName = category.Name
                     lastListViewItem = c
@@ -813,12 +801,11 @@ Public Class frmMain
             If item.SearchItem.FileInfo.FullName = searchItem.FileInfo.FullName Then Exit Sub
         Next
 
-        Dim newItem As KLListViewItem = New KLListViewItem(searchItem, lastListViewItem)
-        newItem.ForeColor = category.Color
+        Dim newItem As KLListViewItem = New KLListViewItem(searchItem, lastListViewItem) With {.ForeColor = category.Color}
         lastListViewItem.SubItems.Add(newItem)
 
         If autoSelect Then
-            lvFiles.SelectedItem = newItem
+            ListViewFiles.SelectedItem = newItem
             If enqueENTER Then
                 enqueENTER = False
                 LaunchSelectedItem()
@@ -827,7 +814,7 @@ Public Class frmMain
     End Sub
 
     Private Sub DoSearch()
-        If mSearchEngine.State = SearchEngine.StateConstants.Idle Then
+        If SearchEngineApi.State = SearchEngine.StateConstants.Idle Then
             ResetKLListView()
 
             If Preferences.cachedResults.ContainsKey(searchQuery) Then
@@ -839,15 +826,15 @@ Public Class frmMain
                     Preferences.cachedResults.Remove(searchQuery)
                 End If
             End If
-            mSearchEngine.StartNewSearch(searchQuery, mPathsExceptions, mSelExtensions, selCategory)
+            SearchEngineApi.StartNewSearch(searchQuery, mPathsExceptions, mSelExtensions, selCategory)
         Else
-            mSearchEngine.Abort()
+            SearchEngineApi.Abort()
         End If
     End Sub
 #End Region
 
 #Region "Keyboard Handling"
-    Public Sub HandleKeyDown(ByVal sender As Object, ByVal e As KeyEventArgs)
+    Public Sub HandleKeyDown(sender As Object, e As KeyEventArgs)
         Dim key As Keys = e.KeyCode
         Select Case key
             Case (Preferences.hotKey And Keys.KeyCode)
@@ -864,11 +851,11 @@ Public Class frmMain
                 RemoveLastCharFromQuery()
             Case Keys.Delete
                 searchQuery = ""
-                mSearchEngine.Abort()
+                SearchEngineApi.Abort()
                 ResetKLListView()
             Case Keys.F12
                 If e.Control Then
-                    lvCats.Items(0).Selected = True
+                    ListViewCats.Items(0).Selected = True
                     SelectCategory()
                     ShowKL(False)
                 Else
@@ -895,15 +882,15 @@ Public Class frmMain
             Case Keys.Down
                 SetMainHeight(Me.Height + 20)
             Case Keys.Left
-                lvFiles.DirAreaWidthPercentage += 5
+                ListViewFiles.DirAreaWidthPercentage += 5
             Case Keys.Right
-                lvFiles.DirAreaWidthPercentage -= 5
+                ListViewFiles.DirAreaWidthPercentage -= 5
 #End If
             Case Else
                 If e.Control Or e.Shift Or e.Alt Then
-                    For i As Integer = 0 To mSearchEngine.Categories.Count - 1
-                        If (mSearchEngine.Categories(i).ShortCut And Keys.KeyCode) = key AndAlso (mSearchEngine.Categories(i).ShortCut And Keys.Modifiers) = e.Modifiers Then
-                            lvCats.Items(i + 1).Selected = True
+                    For i As Integer = 0 To SearchEngineApi.Categories.Count - 1
+                        If (SearchEngineApi.Categories(i).ShortCut And Keys.KeyCode) = key AndAlso (SearchEngineApi.Categories(i).ShortCut And Keys.Modifiers) = e.Modifiers Then
+                            ListViewCats.Items(i + 1).Selected = True
                             SelectCategory()
                             ShowKL(False)
                             Exit Sub
@@ -946,13 +933,13 @@ Public Class frmMain
         RepaintTitleArea()
     End Sub
 
-    Private Sub mKeyboardHook_KeyDown(ByVal e As KeyEventArgs) Handles mKeyboardHook.KeyDown
+    Private Sub KeyboardHookApi_KeyDown(ByVal e As KeyEventArgs) Handles KeyboardHookApi.KeyDown
         Me.Visible = True
 
-        If lvCats.Focused Then
+        If ListViewCats.Focused Then
             Select Case e.KeyCode
                 Case Keys.Up, Keys.Down, Keys.Left, Keys.Right, Keys.PageDown, Keys.PageUp
-                    lvCats.handleKeyNav(e)
+                    ListViewCats.HandleKeyNav(e)
                 Case Keys.Enter
                     SelectCategory()
                 Case Keys.Escape
@@ -966,7 +953,7 @@ Public Class frmMain
                     If e.Control Then
                         HandleKeyDown(Me, e)
                     Else
-                        lvFiles.HandleKeyboardNav(Me, e)
+                        ListViewFiles.HandleKeyboardNav(Me, e)
                     End If
                 Case Else
                     HandleKeyDown(Me, e)
@@ -977,43 +964,43 @@ Public Class frmMain
 
 #Region "Categories Handling"
     Private Sub CreateCategoriesTab()
-        lvCats.VirtualListSize = mSearchEngine.Categories.Count + 1
-        catsMaxHeight = lvCats.GetItemRect(0).Height * lvCats.VirtualListSize + lvCats.VirtualListSize
+        ListViewCats.VirtualListSize = SearchEngineApi.Categories.Count + 1
+        catsMaxHeight = ListViewCats.GetItemRect(0).Height * ListViewCats.VirtualListSize + ListViewCats.VirtualListSize
     End Sub
 
     Private Sub SelectCategory()
-        If selCategoryLVIndex <> lvCats.SelectedIndices(0) Then
-            selCategoryLVIndex = lvCats.SelectedIndices(0)
+        If selCategoryLVIndex <> ListViewCats.SelectedIndices(0) Then
+            selCategoryLVIndex = ListViewCats.SelectedIndices(0)
             If selCategoryLVIndex = 0 Then
                 selCategory = Nothing
                 selCategoryName = "All Categories"
             Else
-                selCategory = mSearchEngine.Categories(selCategoryLVIndex - 1)
+                selCategory = SearchEngineApi.Categories(selCategoryLVIndex - 1)
                 selCategoryName = selCategory.Name
             End If
 
             CacheExtensions()
             If searchQuery <> "" Then
-                Select Case mSearchEngine.State
+                Select Case SearchEngineApi.State
                     Case SearchEngine.StateConstants.Idle
                         ResetKLListView()
                         DoSearch()
                     Case SearchEngine.StateConstants.Searching
-                        mSearchEngine.Abort()
+                        SearchEngineApi.Abort()
                 End Select
             End If
         End If
         catsExpColMode = ExpColConstants.Collapsing
     End Sub
 
-    Private Sub lvCats_DoubleClick(ByVal sender As Object, ByVal e As EventArgs) Handles lvCats.DoubleClick
+    Private Sub ListViewCats_DoubleClick(sender As Object, e As EventArgs) Handles ListViewCats.DoubleClick
         SelectCategory()
     End Sub
 
-    Private Sub lvCats_DrawItem(ByVal sender As Object, ByVal e As DrawListViewItemEventArgs) Handles lvCats.DrawItem
-        If lvCats.SelectedIndices.Count = 0 Then Exit Sub
+    Private Sub ListViewCats_DrawItem(sender As Object, e As DrawListViewItemEventArgs) Handles ListViewCats.DrawItem
+        If ListViewCats.SelectedIndices.Count = 0 Then Exit Sub
 
-        Dim isSelected As Boolean = (lvCats.SelectedIndices(0) = e.ItemIndex)
+        Dim isSelected As Boolean = (ListViewCats.SelectedIndices(0) = e.ItemIndex)
         Dim backColor As SolidBrush
         Dim foreColor As SolidBrush
         Dim shortcutName As String = ""
@@ -1024,11 +1011,9 @@ Public Class frmMain
         g.SmoothingMode = Drawing2D.SmoothingMode.AntiAlias
         g.TextRenderingHint = Drawing.Text.TextRenderingHint.ClearTypeGridFit
 
-        If e.ItemIndex = 0 Then
-            shortcutName = "Control + F12"
-        Else
-            shortcutName = mSearchEngine.Categories(e.ItemIndex - 1).ShortCutName
-        End If
+        shortcutName = If(e.ItemIndex = 0,
+                "Control + F12",
+                SearchEngineApi.Categories(e.ItemIndex - 1).ShortCutName)
         shortcutNameSize = g.MeasureString(shortcutName, catShortcutFont, 0).ToSize
 
         If isSelected Then
@@ -1053,7 +1038,7 @@ Public Class frmMain
         backColor.Dispose()
     End Sub
 
-    Private Sub lvCats_KeyDown(ByVal sender As Object, ByVal e As KeyEventArgs) Handles lvCats.KeyDown
+    Private Sub ListViewCats_KeyDown(sender As Object, e As KeyEventArgs) Handles ListViewCats.KeyDown
         Select Case e.KeyCode
             Case Keys.Enter
                 SelectCategory()
@@ -1064,19 +1049,17 @@ Public Class frmMain
         End Select
     End Sub
 
-    Private Sub lvCats_LostFocus(ByVal sender As Object, ByVal e As EventArgs) Handles lvCats.LostFocus
+    Private Sub ListViewCats_LostFocus(sender As Object, e As EventArgs) Handles ListViewCats.LostFocus
         Select Case catsExpColMode
             Case ExpColConstants.Expanded, ExpColConstants.Expanding
                 catsExpColMode = ExpColConstants.Collapsing
         End Select
     End Sub
 
-    Private Sub lvCats_RetrieveVirtualItem(ByVal sender As Object, ByVal e As RetrieveVirtualItemEventArgs) Handles lvCats.RetrieveVirtualItem
-        If e.ItemIndex = 0 Then
-            e.Item = New ListViewItem("All Categories")
-        Else
-            e.Item = New ListViewItem(mSearchEngine.Categories.Item(e.ItemIndex - 1).Name)
-        End If
+    Private Sub ListViewCats_RetrieveVirtualItem(sender As Object, e As RetrieveVirtualItemEventArgs) Handles ListViewCats.RetrieveVirtualItem
+        e.Item = If(e.ItemIndex = 0,
+                New ListViewItem("All Categories"),
+                New ListViewItem(SearchEngineApi.Categories.Item(e.ItemIndex - 1).Name))
     End Sub
 #End Region
 
@@ -1086,12 +1069,12 @@ Public Class frmMain
         Dim ms As IO.MemoryStream
 
         ms = New IO.MemoryStream
-        f.Serialize(ms, mSearchEngine.SearchPaths)
+        f.Serialize(ms, SearchEngineApi.SearchPaths)
         IO.File.WriteAllText(confPath + "searchPaths.dat", System.Convert.ToBase64String(ms.GetBuffer))
         ms.Dispose()
 
         ms = New IO.MemoryStream
-        f.Serialize(ms, mSearchEngine.Categories)
+        f.Serialize(ms, SearchEngineApi.Categories)
         IO.File.WriteAllText(confPath + "searchCategories.dat", System.Convert.ToBase64String(ms.GetBuffer))
         ms.Dispose()
     End Sub
@@ -1100,31 +1083,31 @@ Public Class frmMain
         Dim f As BinaryFormatter = New BinaryFormatter()
         Dim ms As IO.MemoryStream
 
-        mSearchEngine.SearchPaths.Clear()
+        SearchEngineApi.SearchPaths.Clear()
         If IO.File.Exists(confPath + "searchPaths.dat") Then
             ms = New IO.MemoryStream(System.Convert.FromBase64String(IO.File.ReadAllText(confPath + "searchPaths.dat")))
             If ms.Capacity > 0 Then
                 Dim sps As SearchPaths = CType(f.Deserialize(ms), SearchPaths)
                 For Each sp As SearchPath In sps
-                    mSearchEngine.SearchPaths.Add(sp)
+                    SearchEngineApi.SearchPaths.Add(sp)
                 Next
             End If
             ms.Dispose()
         End If
 
-        mSearchEngine.Categories.Clear()
+        SearchEngineApi.Categories.Clear()
         If IO.File.Exists(confPath + "searchCategories.dat") Then
             ms = New IO.MemoryStream(System.Convert.FromBase64String(IO.File.ReadAllText(confPath + "searchCategories.dat")))
             If ms.Capacity > 0 Then
                 Dim scs As SearchCategories = CType(f.Deserialize(ms), SearchCategories)
                 For Each sc As SearchCategory In scs
-                    mSearchEngine.Categories.Add(sc)
+                    SearchEngineApi.Categories.Add(sc)
                 Next
             End If
             ms.Dispose()
         End If
 
-        If mSearchEngine.SearchPaths.Count = 0 And mSearchEngine.Categories.Count = 0 Then
+        If SearchEngineApi.SearchPaths.Count = 0 And SearchEngineApi.Categories.Count = 0 Then
             LoadDefaultSearchPreferences()
         End If
 
@@ -1133,17 +1116,17 @@ Public Class frmMain
     End Sub
 
     Friend Sub LoadDefaultSearchPreferences()
-        mSearchEngine.SearchPaths.Clear()
-        mSearchEngine.Categories.Clear()
+        SearchEngineApi.SearchPaths.Clear()
+        SearchEngineApi.Categories.Clear()
 
         Dim path As IO.DirectoryInfo = New IO.DirectoryInfo(My.Computer.FileSystem.SpecialDirectories.Programs).Parent
-        mSearchEngine.SearchPaths.Add(New SearchPath(path.FullName, True))
-        mSearchEngine.SearchPaths.Add(New SearchPath(path.FullName.Replace(path.Parent.Name, "All Users"), True))
-        mSearchEngine.SearchPaths(1).FirendlyName += " (All Users)"
+        SearchEngineApi.SearchPaths.Add(New SearchPath(path.FullName, True))
+        SearchEngineApi.SearchPaths.Add(New SearchPath(path.FullName.Replace(path.Parent.Name, "All Users"), True))
+        SearchEngineApi.SearchPaths(1).FirendlyName += " (All Users)"
 
         Dim osInfo As OperatingSystem = System.Environment.OSVersion
         If osInfo.Version.Major >= 6 Then
-            mSearchEngine.SearchPaths.Add(New SearchPath(Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu), True))
+            SearchEngineApi.SearchPaths.Add(New SearchPath(Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu), True))
 
             Dim ns As XNamespace = ""
             Dim libsPath = New IO.DirectoryInfo(IO.Path.Combine(path.Parent.FullName, "Libraries"))
@@ -1159,23 +1142,24 @@ Public Class frmMain
                         folderPath = Runtime.InteropServices.Marshal.PtrToStringUni(folderPtr)
                         Runtime.InteropServices.Marshal.FreeCoTaskMem(folderPtr)
                     End If
-                    If folderPath <> "" Then mSearchEngine.SearchPaths.Add(New SearchPath(folderPath, True))
+                    If folderPath <> "" Then SearchEngineApi.SearchPaths.Add(New SearchPath(folderPath, True))
                 Next
             Next
         Else
-            mSearchEngine.SearchPaths.Add(New SearchPath(My.Computer.FileSystem.SpecialDirectories.MyDocuments, True))
-            mSearchEngine.SearchPaths.Add(New SearchPath(My.Computer.FileSystem.SpecialDirectories.MyMusic, True))
-            mSearchEngine.SearchPaths.Add(New SearchPath(My.Computer.FileSystem.SpecialDirectories.MyPictures, True))
-            If IO.Directory.Exists(My.Computer.FileSystem.SpecialDirectories.MyDocuments + "\My Videos") Then mSearchEngine.SearchPaths.Add(New SearchPath(My.Computer.FileSystem.SpecialDirectories.MyDocuments + "\My Videos", True))
+            SearchEngineApi.SearchPaths.Add(New SearchPath(My.Computer.FileSystem.SpecialDirectories.MyDocuments, True))
+            SearchEngineApi.SearchPaths.Add(New SearchPath(My.Computer.FileSystem.SpecialDirectories.MyMusic, True))
+            SearchEngineApi.SearchPaths.Add(New SearchPath(My.Computer.FileSystem.SpecialDirectories.MyPictures, True))
+            If IO.Directory.Exists(My.Computer.FileSystem.SpecialDirectories.MyDocuments + "\My Videos") Then SearchEngineApi.SearchPaths.Add(New SearchPath(My.Computer.FileSystem.SpecialDirectories.MyDocuments + "\My Videos", True))
         End If
-        mSearchEngine.SearchPaths.Add(New SearchPath(My.Computer.FileSystem.SpecialDirectories.Desktop, True))
-        mSearchEngine.SearchPaths.Add(New SearchPath(Environment.GetFolderPath(Environment.SpecialFolder.Favorites), True))
+        SearchEngineApi.SearchPaths.Add(New SearchPath(My.Computer.FileSystem.SpecialDirectories.Desktop, True))
+        SearchEngineApi.SearchPaths.Add(New SearchPath(Environment.GetFolderPath(Environment.SpecialFolder.Favorites), True))
 
         Dim c As SearchCategory
 
-        c = New SearchCategory
-        c.Name = "Media Files"
-        c.Color = Color.DarkGreen
+        c = New SearchCategory With {
+            .Name = "Media Files",
+            .Color = Color.DarkGreen
+        }
         c.Extensions.Add(".mp3")
         c.Extensions.Add(".wav")
         c.Extensions.Add(".mpg")
@@ -1184,39 +1168,43 @@ Public Class frmMain
         c.Extensions.Add(".wma")
         c.Extensions.Add(".acc")
         c.Extensions.Add(".ogg")
-        mSearchEngine.Categories.Add(c)
+        SearchEngineApi.Categories.Add(c)
 
-        c = New SearchCategory
-        c.Name = "Pictures"
-        c.Color = Color.FromArgb(128, 0, 64)
+        c = New SearchCategory With {
+            .Name = "Pictures",
+            .Color = Color.FromArgb(128, 0, 64)
+        }
         c.Extensions.Add(".gif")
         c.Extensions.Add(".jpg")
         c.Extensions.Add(".png")
         c.Extensions.Add(".psd")
         c.Extensions.Add(".tif")
-        mSearchEngine.Categories.Add(c)
+        SearchEngineApi.Categories.Add(c)
 
-        c = New SearchCategory
-        c.Name = "Documents"
-        c.Color = Color.FromArgb(255, 128, 64)
+        c = New SearchCategory With {
+            .Name = "Documents",
+            .Color = Color.FromArgb(255, 128, 64)
+        }
         c.Extensions.Add(".txt")
         c.Extensions.Add(".doc")
         c.Extensions.Add(".xls")
         c.Extensions.Add(".ppt")
         c.Extensions.Add(".pps")
-        mSearchEngine.Categories.Add(c)
+        SearchEngineApi.Categories.Add(c)
 
-        c = New SearchCategory
-        c.Name = "Applications"
-        c.Color = Color.FromArgb(128, 64, 64)
+        c = New SearchCategory With {
+            .Name = "Applications",
+            .Color = Color.FromArgb(128, 64, 64)
+        }
         c.Extensions.Add(".exe")
-        mSearchEngine.Categories.Add(c)
+        SearchEngineApi.Categories.Add(c)
 
-        c = New SearchCategory
-        c.Name = "Internet Shortcuts"
-        c.Color = Color.FromArgb(0, 64, 128)
+        c = New SearchCategory With {
+            .Name = "Internet Shortcuts",
+            .Color = Color.FromArgb(0, 64, 128)
+        }
         c.Extensions.Add(".url")
-        mSearchEngine.Categories.Add(c)
+        SearchEngineApi.Categories.Add(c)
     End Sub
 #End Region
 
@@ -1262,11 +1250,11 @@ Public Class frmMain
     End Sub
 
     Private Sub SetKLPreferences()
-        niIcon.Visible = Preferences.showTrayIcon
-        lvFiles.DirAreaWidthPercentage = Preferences.filesDirWidthPercenrage
+        NotifyIconIcon.Visible = Preferences.showTrayIcon
+        ListViewFiles.DirAreaWidthPercentage = Preferences.filesDirWidthPercenrage
 
         pnlCats.Top = Preferences.mainTitleHeight
-        lvFiles.Top = Preferences.mainTitleHeight
+        ListViewFiles.Top = Preferences.mainTitleHeight
         SetMainColor()
 
         Dim key As Microsoft.Win32.RegistryKey = My.Computer.Registry.CurrentUser.OpenSubKey("Software\Microsoft\Windows\CurrentVersion\Run", True)
@@ -1279,13 +1267,13 @@ Public Class frmMain
     End Sub
 
     Private Sub SetKeyCapture()
-        mKeyboardHook.HookedKeys.Clear()
-        mKeyboardHook.HookedKeys.Add(Preferences.hotKey)
-        mKeyboardHook.HookedKeys.Add(Keys.Control Or Keys.F12)
+        KeyboardHookApi.HookedKeys.Clear()
+        KeyboardHookApi.HookedKeys.Add(Preferences.hotKey)
+        KeyboardHookApi.HookedKeys.Add(Keys.Control Or Keys.F12)
 
-        For Each c As SearchCategory In mSearchEngine.Categories
+        For Each c As SearchCategory In SearchEngineApi.Categories
             If c.ShortCut <> Keys.None Then
-                mKeyboardHook.HookedKeys.Add(c.ShortCut)
+                KeyboardHookApi.HookedKeys.Add(c.ShortCut)
             End If
         Next
     End Sub
@@ -1311,7 +1299,7 @@ Public Class frmMain
         Preferences.KLVersion = My.Application.Info.Version
         Preferences.mainWindowLocation = Me.Location
         Preferences.mainWindowSize = New Size(Me.Width, Preferences.mainMaxHeight)
-        Preferences.filesDirWidthPercenrage = lvFiles.DirAreaWidthPercentage
+        Preferences.filesDirWidthPercenrage = ListViewFiles.DirAreaWidthPercentage
 
         ms = New IO.MemoryStream
         f.Serialize(ms, Preferences)
@@ -1340,7 +1328,7 @@ Public Class frmMain
 
     Private Sub CachePathsExceptions()
         mPathsExceptions = New List(Of String)
-        For Each folder As SearchPath In mSearchEngine.SearchPaths
+        For Each folder As SearchPath In SearchEngineApi.SearchPaths
             For Each ex As SearchPath In folder.Exceptions
                 mPathsExceptions.Add(ex.FullPathName)
             Next
@@ -1349,7 +1337,7 @@ Public Class frmMain
 
     Private Sub CacheExtensions()
         mSelExtensions = New Dictionary(Of String, SearchCategory)
-        For Each c As SearchCategory In mSearchEngine.Categories
+        For Each c As SearchCategory In SearchEngineApi.Categories
             If (selCategory Is Nothing) OrElse selCategory.Name = c.Name Then
                 For Each ext As String In c.Extensions
                     mSelExtensions.Add(ext, c)
@@ -1367,31 +1355,31 @@ Public Class frmMain
     End Sub
 
 #Region "lvFiles Events"
-    Private Sub lvFiles_DoubleClick(ByVal sender As Object, ByVal e As EventArgs) Handles lvFiles.DoubleClick
+    Private Sub ListViewFiles_DoubleClick(sender As Object, e As EventArgs) Handles ListViewFiles.DoubleClick
         LaunchSelectedItem()
     End Sub
 
-    Private Sub lvFiles_ItemSelected(ByVal item As KLListViewItem) Handles lvFiles.ItemSelected
+    Private Sub ListViewFiles_ItemSelected(ByVal item As KLListViewItem) Handles ListViewFiles.ItemSelected
         RepaintTitleArea()
     End Sub
 
-    Private Sub lvFiles_Resize(ByVal sender As Object, ByVal e As EventArgs) Handles lvFiles.Resize
+    Private Sub ListViewFiles_Resize(sender As Object, e As EventArgs) Handles ListViewFiles.Resize
         titleTextArea = New Rectangle(34,
                                     CInt((Preferences.mainTitleHeight - Preferences.mainFontHeight) / 2),
                                     Width - 28 * 2 - 16,
                                     Preferences.mainTitleHeight)
     End Sub
 
-    Private Sub lvFiles_MouseMove(ByVal sender As Object, ByVal e As MouseEventArgs) Handles lvFiles.MouseMove
-        frmMain_MouseMove(Me, New MouseEventArgs(e.Button, e.Clicks, e.X + lvFiles.Left, e.Y + lvFiles.Top, e.Delta))
+    Private Sub ListViewFiles_MouseMove(sender As Object, e As MouseEventArgs) Handles ListViewFiles.MouseMove
+        FormMain_MouseMove(Me, New MouseEventArgs(e.Button, e.Clicks, e.X + ListViewFiles.Left, e.Y + ListViewFiles.Top, e.Delta))
     End Sub
 
-    Private Sub lvFiles_MouseDown(ByVal sender As Object, ByVal e As MouseEventArgs) Handles lvFiles.MouseDown
-        frmMain_MouseDown(Me, New MouseEventArgs(e.Button, e.Clicks, e.X + lvFiles.Left, e.Y + lvFiles.Top, e.Delta))
+    Private Sub ListViewFiles_MouseDown(sender As Object, e As MouseEventArgs) Handles ListViewFiles.MouseDown
+        FormMain_MouseDown(Me, New MouseEventArgs(e.Button, e.Clicks, e.X + ListViewFiles.Left, e.Y + ListViewFiles.Top, e.Delta))
     End Sub
 
-    Private Sub lvFiles_MouseUp(ByVal sender As Object, ByVal e As MouseEventArgs) Handles lvFiles.MouseUp
-        frmMain_MouseUp(Me, New MouseEventArgs(e.Button, e.Clicks, e.X + lvFiles.Left, e.Y + lvFiles.Top, e.Delta))
+    Private Sub ListViewFiles_MouseUp(sender As Object, e As MouseEventArgs) Handles ListViewFiles.MouseUp
+        FormMain_MouseUp(Me, New MouseEventArgs(e.Button, e.Clicks, e.X + ListViewFiles.Left, e.Y + ListViewFiles.Top, e.Delta))
     End Sub
 #End Region
 
@@ -1401,15 +1389,13 @@ Public Class frmMain
     Private removedExceptions As List(Of String)
     Private enabledRecursions As List(Of String)
 
-    Private Sub lvFiles_DragOver(ByVal sender As Object, ByVal e As DragEventArgs) Handles lvFiles.DragOver
-        If e.Data.GetDataPresent(DataFormats.FileDrop) Then
-            e.Effect = DragDropEffects.All
-        Else
-            e.Effect = DragDropEffects.None
-        End If
+    Private Sub ListViewFiles_DragOver(sender As Object, e As DragEventArgs) Handles ListViewFiles.DragOver
+        e.Effect = If(e.Data.GetDataPresent(DataFormats.FileDrop),
+                        DragDropEffects.All,
+                        DragDropEffects.None)
     End Sub
 
-    Private Sub lvFiles_DragDrop(ByVal sender As Object, ByVal e As DragEventArgs) Handles lvFiles.DragDrop
+    Private Sub ListViewFiles_DragDrop(sender As Object, e As DragEventArgs) Handles ListViewFiles.DragDrop
         HandleDroppedFiles(e)
     End Sub
 
@@ -1422,7 +1408,7 @@ Public Class frmMain
             removedExceptions = New List(Of String)
             enabledRecursions = New List(Of String)
 
-            Dim f As frmAddFromDropProgress = New frmAddFromDropProgress()
+            Dim f As FormAddFromDropProgress = New FormAddFromDropProgress()
             f.Location = New Point(Screen.FromControl(Me).Bounds.Width \ 2 - f.Width \ 2, 10)
             f.TopMost = True
             f.Show(Me)
@@ -1464,10 +1450,11 @@ Public Class frmMain
             'End Try
 
             Application.DoEvents()
-            Dim ff As frmAddFromDropResult = New frmAddFromDropResult
-            ff.TopMost = True
-            ff.StartPosition = FormStartPosition.CenterScreen
-            ShowReport(ff.tvFolders, ff.tvExt)
+            Dim ff As FormAddFromDropResult = New FormAddFromDropResult With {
+                .TopMost = True,
+                .StartPosition = FormStartPosition.CenterScreen
+            }
+            ShowReport(ff.TreeViewFolders, ff.TreeViewExt)
             ff.ShowDialog()
 
             addedFileTypes.Clear()
@@ -1483,7 +1470,7 @@ Public Class frmMain
         ProcessFoldersResults(tvFolders, enabledRecursions, "Enabled Recursion")
 
         Dim pNode As TreeNode
-        For Each c As SearchCategory In mSearchEngine.Categories
+        For Each c As SearchCategory In SearchEngineApi.Categories
             pNode = tvExt.Nodes.Add(c.Name)
             For Each aft As KeyValuePair(Of String, String) In addedFileTypes
                 If aft.Value = c.Name Then
@@ -1521,32 +1508,32 @@ Public Class frmMain
         End If
     End Sub
 
-    Private Sub ProcessRequiredFileTypes(fileName As String, ext As String, progressForm As frmAddFromDropProgress)
-        For Each c As SearchCategory In mSearchEngine.Categories
+    Private Sub ProcessRequiredFileTypes(fileName As String, ext As String, progressForm As FormAddFromDropProgress)
+        For Each c As SearchCategory In SearchEngineApi.Categories
             If c.Extensions.Contains(ext.ToLower) Then Exit Sub
         Next
 
-        Dim f As frmAddFromDropExtension = New frmAddFromDropExtension
-        f.lblInfo.Text = String.Format(f.lblInfo.Text, fileName, ext, SearchItems.GetExtensionDescription(ext))
-        For Each c As SearchCategory In mSearchEngine.Categories
-            f.lbCats.Items.Add(c)
+        Dim f As FormAddFromDropExtension = New FormAddFromDropExtension
+        f.LabelInfo.Text = String.Format(f.LabelInfo.Text, fileName, ext, SearchItems.GetExtensionDescription(ext))
+        For Each c As SearchCategory In SearchEngineApi.Categories
+            f.ListBoxCats.Items.Add(c)
         Next
-        f.lbCats.SelectedIndex = 0
+        f.ListBoxCats.SelectedIndex = 0
         f.StartPosition = FormStartPosition.CenterScreen
 
         progressForm.Visible = False
         f.ShowDialog(Me)
         progressForm.Visible = True
 
-        If f.lbCats.SelectedIndex <> -1 Then
-            Dim c As SearchCategory = CType(f.lbCats.SelectedItem, SearchCategory)
+        If f.ListBoxCats.SelectedIndex <> -1 Then
+            Dim c As SearchCategory = CType(f.ListBoxCats.SelectedItem, SearchCategory)
             c.Extensions.Add(ext.ToLower)
             addedFileTypes.Add(ext, c.Name)
         End If
     End Sub
 
     Private Sub ProcessRequiredFolders(ByVal folder As String)
-        For Each path As SearchPath In mSearchEngine.SearchPaths
+        For Each path As SearchPath In SearchEngineApi.SearchPaths
             If folder = path.FullPathName Then
                 ' It's already included, so there's nothing to do
                 Exit Sub
@@ -1586,7 +1573,7 @@ Public Class frmMain
             End If
         Next
 
-        mSearchEngine.SearchPaths.Add(New SearchPath(folder, False))
+        SearchEngineApi.SearchPaths.Add(New SearchPath(folder, False))
         addedFolders.Add(folder)
     End Sub
 
@@ -1607,11 +1594,11 @@ Public Class frmMain
     End Sub
 #End Region
 
-    Private Sub mSearchEngine_ProgressChanged() Handles mSearchEngine.ProgressChanged
+    Private Sub SearchEngineApi_ProgressChanged() Handles SearchEngineApi.ProgressChanged
         Me.Invalidate()
     End Sub
 
-    Private Sub niIcon_MouseDoubleClick(ByVal sender As Object, ByVal e As MouseEventArgs) Handles niIcon.MouseDoubleClick
+    Private Sub NotifyIconIcon_MouseDoubleClick(sender As Object, e As MouseEventArgs) Handles NotifyIconIcon.MouseDoubleClick
         ShowKL(True)
     End Sub
 End Class

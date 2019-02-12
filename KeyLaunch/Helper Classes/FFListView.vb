@@ -5,7 +5,7 @@ Public Class FFListView
         Me.DoubleBuffered = True
     End Sub
 
-    Public Sub handleKeyNav(ByVal e As KeyEventArgs)
+    Public Sub HandleKeyNav(e As KeyEventArgs)
         If Me.SelectedIndices.Count = 0 Then Exit Sub
 
         Dim selItem As ListViewItem = Me.Items(Me.SelectedIndices(0))

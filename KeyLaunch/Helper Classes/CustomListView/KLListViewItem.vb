@@ -1,6 +1,6 @@
 Public Class KLListViewItem
-    Private WithEvents mSubItems As KLListViewItemsCollection
-    Private mItemType As ItemTypeConstants
+    Private WithEvents LvSubItems As KLListViewItemsCollection
+    Private ReadOnly mItemType As ItemTypeConstants
     Private mForeColor As Color
     Private mForeColorSelected As Color
     Private mBackColor As Color
@@ -8,7 +8,7 @@ Public Class KLListViewItem
     Private mFont As Font
     Private mFontSelected As Font
     Private mSearchItem As SearchItem
-    Private mCategoryItem As SearchCategory
+    Private ReadOnly mCategoryItem As SearchCategory
     Private mBounds As Rectangle
     Private mIsSelected As Boolean
     Private mParentItem As KLListViewItem
@@ -35,7 +35,7 @@ Public Class KLListViewItem
         '------------------------
 
         mParentItem = parent
-        mSubItems = New KLListViewItemsCollection(parent)
+        LvSubItems = New KLListViewItemsCollection(parent)
         mSearchItem = searchItem
         mItemType = ItemTypeConstants.Item
 
@@ -55,7 +55,7 @@ Public Class KLListViewItem
 
         mParentItem = parent
         mParentListView = parentListView
-        mSubItems = New KLListViewItemsCollection(parent)
+        LvSubItems = New KLListViewItemsCollection(parent)
         mCategoryItem = categoryItem
         mItemType = ItemTypeConstants.Group
 
@@ -142,10 +142,10 @@ Public Class KLListViewItem
 
     Public Property SubItems() As KLListViewItemsCollection
         Get
-            Return mSubItems
+            Return LvSubItems
         End Get
         Set(ByVal value As KLListViewItemsCollection)
-            mSubItems = value
+            LvSubItems = value
         End Set
     End Property
 
@@ -169,12 +169,9 @@ Public Class KLListViewItem
     End Property
 
     Public Function [Next]() As KLListViewItem
-        Dim itemsCount As Integer
-        If mParentListView IsNot Nothing Then
-            itemsCount = (mParentListView.Items.Count - 1)
-        Else
-            itemsCount = (mParentItem.SubItems.Count - 1)
-        End If
+        Dim itemsCount = If(mParentListView IsNot Nothing,
+                            mParentListView.Items.Count - 1,
+                            mParentItem.SubItems.Count - 1)
 
         If Me.Index = itemsCount Then
             If mParentItem Is Nothing Then Return Nothing
@@ -192,11 +189,9 @@ Public Class KLListViewItem
 
             Return nextGroup.SubItems(0)
         Else
-            If mParentListView IsNot Nothing Then
-                Return mParentListView.Items(Me.Index + 1)
-            Else
-                Return mParentItem.SubItems(Me.Index + 1)
-            End If
+            Return If(mParentListView IsNot Nothing,
+                        mParentListView.Items(Me.Index + 1),
+                        mParentItem.SubItems(Me.Index + 1))
         End If
     End Function
 
@@ -217,11 +212,9 @@ Public Class KLListViewItem
 
             Return prevGroup.SubItems(prevGroup.SubItems.Count - 1)
         Else
-            If mParentListView IsNot Nothing Then
-                Return mParentListView.Items(Me.Index - 1)
-            Else
-                Return mParentItem.SubItems(Me.Index - 1)
-            End If
+            Return If(mParentListView IsNot Nothing,
+                        mParentListView.Items(Me.Index - 1),
+                        mParentItem.SubItems(Me.Index - 1))
         End If
     End Function
 
@@ -258,7 +251,7 @@ Public Class KLListViewItem
         End Set
     End Property
 
-    Private Sub mSubItems_Changed(ByVal sender As KLListViewItemsCollection, ByVal reason As KLListViewItemsCollection.ChangeEventConstants) Handles mSubItems.Changed
+    Private Sub LvSubItems_Changed(ByVal sender As KLListViewItemsCollection, ByVal reason As KLListViewItemsCollection.ChangeEventConstants) Handles LvSubItems.Changed
         RaiseEvent SubItemsChanged(sender, reason)
     End Sub
 
@@ -272,8 +265,7 @@ Public Class KLListViewItem
 
     Public Sub Launch()
         Try
-            Dim procInfo As ProcessStartInfo = New ProcessStartInfo(mSearchItem.FileInfo.FullName)
-            procInfo.UseShellExecute = True
+            Dim procInfo As New ProcessStartInfo(mSearchItem.FileInfo.FullName) With {.UseShellExecute = True}
             Process.Start(procInfo)
         Catch ex As Exception
             MsgBox(ex.Message + vbCrLf + vbCrLf + _
@@ -285,8 +277,7 @@ Public Class KLListViewItem
 
     Public Sub OpenContainingFolder()
         Try
-            Dim procInfo As ProcessStartInfo = New ProcessStartInfo(mSearchItem.FileInfo.Directory.FullName)
-            procInfo.UseShellExecute = True
+            Dim procInfo As New ProcessStartInfo(mSearchItem.FileInfo.Directory.FullName) With {.UseShellExecute = True}
             Process.Start(procInfo)
         Catch ex As Exception
 
@@ -295,8 +286,7 @@ Public Class KLListViewItem
 
     Public Shared Sub OpenContainingFolder(ByVal folder As String)
         Try
-            Dim procInfo As ProcessStartInfo = New ProcessStartInfo(folder)
-            procInfo.UseShellExecute = True
+            Dim procInfo As New ProcessStartInfo(folder) With {.UseShellExecute = True}
             Process.Start(procInfo)
         Catch ex As Exception
             MsgBox(String.Format("The '{0}' directory could not be opened." + vbCrLf + vbCrLf + "{1}", folder, ex.Message), MsgBoxStyle.Information Or MsgBoxStyle.OkOnly, "Error opening directory")

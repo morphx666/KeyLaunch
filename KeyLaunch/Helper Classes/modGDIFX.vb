@@ -1,4 +1,4 @@
-Module modGDIFX
+Module ModGDIFX
     Public Sub DrawRoundedRectangle(ByVal g As Graphics, ByVal x As Integer, ByVal y As Integer, ByVal w As Integer, ByVal h As Integer, ByVal d As Integer, ByVal p As Pen)
         Dim BaseRect As New RectangleF(x, y, w, h)
         Dim ArcRect As New RectangleF(BaseRect.Location, New SizeF(d, d))
@@ -54,10 +54,10 @@ Module modGDIFX
         Dim bm As Bitmap = New Bitmap(img.Width, img.Height)
         Dim g As Graphics = Graphics.FromImage(bm)
         Dim cm As Imaging.ColorMatrix = New Imaging.ColorMatrix(New Single()() _
-                                                     {New Single() {0.3, 0.3, 0.3, 0, 0}, _
-                                                    New Single() {0.59, 0.59, 0.59, 0, 0}, _
-                                                    New Single() {0.11, 0.11, 0.11, 0, 0}, _
-                                                    New Single() {0, 0, 0, 1, 0}, _
+                                                     {New Single() {0.3, 0.3, 0.3, 0, 0},
+                                                    New Single() {0.59, 0.59, 0.59, 0, 0},
+                                                    New Single() {0.11, 0.11, 0.11, 0, 0},
+                                                    New Single() {0, 0, 0, 1, 0},
                                                     New Single() {0, 0, 0, 0, 1}})
 
 
@@ -67,13 +67,5 @@ Module modGDIFX
         g.Dispose()
 
         Return bm
-    End Function
-
-    Public Function IIf(Of T)(ByVal condition As Boolean, ByVal truePart As T, ByVal falsePart As T) As T
-        If condition Then
-            Return truePart
-        Else
-            Return falsePart
-        End If
     End Function
 End Module

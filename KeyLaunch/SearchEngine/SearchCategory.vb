@@ -1,7 +1,7 @@
 <Serializable()> _
 Public Class SearchCategory
     Private mName As String
-    Private mExtensions As List(Of String)
+    Private ReadOnly mExtensions As List(Of String)
     Private mItem As SearchItem
     Private mColor As Color
     Private mShortCut As Keys
@@ -9,7 +9,7 @@ Public Class SearchCategory
 
     Public Sub New()
         mExtensions = New List(Of String)
-        mColor = Drawing.Color.Black
+        mColor = Color.Black
     End Sub
 
     Public Overrides Function ToString() As String
@@ -18,11 +18,7 @@ Public Class SearchCategory
 
     Public Property ShortCutName() As String
         Get
-            If mShortCutName = "" Then
-                Return Keys.None.ToString
-            Else
-                Return mShortCutName
-            End If
+            Return If(mShortCutName = "", Keys.None.ToString, mShortCutName)
         End Get
         Set(ByVal value As String)
             mShortCutName = value

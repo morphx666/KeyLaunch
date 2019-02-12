@@ -1,6 +1,6 @@
 Imports System.Threading
 
-Public Class frmAbout
+Public Class FormAbout
     Private mainColor As HLSRGB = New HLSRGB(Color.DarkSlateBlue)
 
     Private txtTitle As String = "KeyLaunch 3.0"
@@ -14,15 +14,15 @@ Public Class frmAbout
     Private msgTop As Integer = 0
     Private cpInfo As String = ""
 
-    Private Sub frmAbout_Click(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Click
+    Private Sub FormAbout_Click(sender As Object, e As EventArgs) Handles Me.Click
         Me.Close()
     End Sub
 
-    Private Sub frmAbout_KeyUp(ByVal sender As Object, ByVal e As KeyEventArgs) Handles Me.KeyUp
+    Private Sub FormAbout_KeyUp(sender As Object, e As KeyEventArgs) Handles Me.KeyUp
         Me.Close()
     End Sub
 
-    Private Sub frmAbout_Load(ByVal sender As Object, ByVal e As EventArgs) Handles MyBase.Load
+    Private Sub FormAbout_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Me.SetStyle(ControlStyles.AllPaintingInWmPaint, True)
         Me.SetStyle(ControlStyles.OptimizedDoubleBuffer, True)
         Me.SetStyle(ControlStyles.UserPaint, True)
@@ -33,15 +33,13 @@ Public Class frmAbout
         Dim g As Graphics = Me.CreateGraphics
         textSize = g.MeasureString(txtTitle, txtTitleFont, 0, StringFormat.GenericTypographic).ToSize
         textVerInfoSize = g.MeasureString(txtVerInfo, Me.Font, 0, StringFormat.GenericTypographic).ToSize
-        rect = New Rectangle(pbKLLogo.Right, pbKLLogo.Top - 5, Me.Width, textSize.Height)
+        rect = New Rectangle(PictureBoxKLLogo.Right, PictureBoxKLLogo.Top - 5, Me.Width, textSize.Height)
         g.Dispose()
 
-        Dim colorCycleThread As Thread = New Thread(AddressOf CycleColor)
-        colorCycleThread.IsBackground = True
+        Dim colorCycleThread As Thread = New Thread(AddressOf CycleColor) With {.IsBackground = True}
         colorCycleThread.Start()
 
-        Dim scrollTextThread As Thread = New Thread(AddressOf ScrollText)
-        scrollTextThread.IsBackground = True
+        Dim scrollTextThread As Thread = New Thread(AddressOf ScrollText) With {.IsBackground = True}
         scrollTextThread.Start()
 
         msg = vbCrLf + vbCrLf + vbCrLf
@@ -67,11 +65,11 @@ Public Class frmAbout
         msg += "Well, that's it..."
         msg += "I really hope you enjoy using KeyLaunch!"
 
-        cpInfo = "Copyright © 2002-" + My.Computer.Clock.LocalTime.Year.ToString + " xFX JumpStart : Software Division" + vbCrLf + _
+        cpInfo = "Copyright © 2002-" + My.Computer.Clock.LocalTime.Year.ToString + " xFX JumpStart : Software Division" + vbCrLf +
                 "This computer program is protected by copyright law and international treaties."
     End Sub
 
-    Private Sub frmAbout_Paint(ByVal sender As Object, ByVal e As PaintEventArgs) Handles Me.Paint
+    Private Sub FormAbout_Paint(sender As Object, e As PaintEventArgs) Handles Me.Paint
         Dim g As Graphics = e.Graphics
 
         g.SmoothingMode = Drawing2D.SmoothingMode.HighQuality
@@ -86,18 +84,18 @@ Public Class frmAbout
 
         Dim bRect As Rectangle = New Rectangle(msgRect.Left - 1, rect.Bottom + 20, msgRect.Width + 2, 40)
         g.FillRectangle(Brushes.White, bRect.Left, 0, bRect.Width, bRect.Top + 2)
-        Dim b As Drawing2D.LinearGradientBrush = New Drawing2D.LinearGradientBrush( _
-                                bRect, _
-                                Color.White, _
-                                Color.Transparent, _
+        Dim b As Drawing2D.LinearGradientBrush = New Drawing2D.LinearGradientBrush(
+                                bRect,
+                                Color.White,
+                                Color.Transparent,
                                 Drawing2D.LinearGradientMode.Vertical)
         g.FillRectangle(b, bRect)
 
         bRect = New Rectangle(bRect.Left, Me.Height - 80, bRect.Width, 30)
-        b = New Drawing2D.LinearGradientBrush( _
-                                bRect, _
-                                Color.Transparent, _
-                                Color.White, _
+        b = New Drawing2D.LinearGradientBrush(
+                                bRect,
+                                Color.Transparent,
+                                Color.White,
                                 Drawing2D.LinearGradientMode.Vertical)
         g.FillRectangle(b, bRect)
         g.FillRectangle(Brushes.White, bRect.Left, bRect.Bottom - 1, bRect.Width, Me.Height - bRect.Bottom - 2)
@@ -105,10 +103,10 @@ Public Class frmAbout
         ' ------------------
 
         g.DrawString(txtTitle, txtTitleFont, New SolidBrush(Color.FromArgb(180, 51, 51, 51)), rect.X + 2, rect.Y + 2, StringFormat.GenericTypographic)
-        gradBrush = New Drawing2D.LinearGradientBrush( _
-                                New Rectangle(rect.Right, 0, rect.Width, rect.Height \ 2 + 8), _
-                                mainColor.Color, _
-                                Color.WhiteSmoke, _
+        gradBrush = New Drawing2D.LinearGradientBrush(
+                                New Rectangle(rect.Right, 0, rect.Width, rect.Height \ 2 + 8),
+                                mainColor.Color,
+                                Color.WhiteSmoke,
                                 Drawing2D.LinearGradientMode.Vertical)
         g.DrawString(txtTitle, txtTitleFont, gradBrush, rect, StringFormat.GenericTypographic)
         g.DrawString(txtVerInfo, Me.Font, Brushes.DarkGray, rect.Left + textSize.Width - textVerInfoSize.Width, rect.Bottom, StringFormat.GenericTypographic)

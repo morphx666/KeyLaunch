@@ -91,11 +91,9 @@ Public Class SearchEngine
 
     Public ReadOnly Property Progess() As Integer
         Get
-            If mProgressTotal = 0 Then
-                Return 0
-            Else
-                Return Math.Min(CInt((mProgressCount * 100) / mProgressTotal), 100)
-            End If
+            Return If(mProgressTotal = 0,
+                        0,
+                        Math.Min(CInt((mProgressCount * 100) / mProgressTotal), 100))
         End Get
     End Property
 

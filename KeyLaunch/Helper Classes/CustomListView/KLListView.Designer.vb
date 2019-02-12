@@ -19,26 +19,26 @@ Partial Class KLListView
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-        Me.vsBar = New System.Windows.Forms.VScrollBar()
+        Me.VScrollBarItem = New System.Windows.Forms.VScrollBar()
         Me.SuspendLayout()
         '
-        'vsBar
+        'VScrollBarItem
         '
-        Me.vsBar.Dock = System.Windows.Forms.DockStyle.Right
-        Me.vsBar.Location = New System.Drawing.Point(133, 0)
-        Me.vsBar.Name = "vsBar"
-        Me.vsBar.Size = New System.Drawing.Size(17, 150)
-        Me.vsBar.TabIndex = 0
+        Me.VScrollBarItem.Dock = System.Windows.Forms.DockStyle.Right
+        Me.VScrollBarItem.Location = New System.Drawing.Point(133, 0)
+        Me.VScrollBarItem.Name = "VScrollBarItem"
+        Me.VScrollBarItem.Size = New System.Drawing.Size(17, 150)
+        Me.VScrollBarItem.TabIndex = 0
         '
         'KLListView
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.Controls.Add(Me.vsBar)
+        Me.Controls.Add(Me.VScrollBarItem)
         Me.Name = "KLListView"
         Me.ResumeLayout(False)
 
     End Sub
-    Friend WithEvents vsBar As System.Windows.Forms.VScrollBar
+    Friend WithEvents VScrollBarItem As System.Windows.Forms.VScrollBar
 
 End Class

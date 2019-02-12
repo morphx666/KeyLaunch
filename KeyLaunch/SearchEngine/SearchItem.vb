@@ -87,11 +87,7 @@ Public Class SearchItem
                 Return mName
             Else
                 Dim fExt As String = mFileInfo.Extension
-                If fExt <> "" Then
-                    Return mName.Replace(fExt, "")
-                Else
-                    Return mName
-                End If
+                Return If(fExt <> "", mName.Replace(fExt, ""), mName)
             End If
         End Get
         Set(ByVal value As String)
@@ -145,11 +141,9 @@ Public Class SearchItem
             Else
                 hImgLarge = SHGetFileInfo(fileName, 0, shinfo, Marshal.SizeOf(shinfo), SHGFI_ICON Or SHGFI_LARGEICON)
             End If
-            If shinfo.hIcon.ToInt32 = 0 Then
-                Return Nothing
-            Else
-                Return Icon.FromHandle(shinfo.hIcon)
-            End If
+            Return If(shinfo.hIcon.ToInt32 = 0,
+                        Nothing,
+                        Icon.FromHandle(shinfo.hIcon))
         End If
 
         Return Nothing
@@ -160,11 +154,7 @@ Public Class SearchItem
         Dim linkPath As String = mShellLink.GetLinkedPath(mFileInfo.FullName)
         mShellLink = Nothing
 
-        If IO.File.Exists(linkPath) Then
-            Return New IO.FileInfo(linkPath)
-        Else
-            Return Nothing
-        End If
+        Return If(IO.File.Exists(linkPath), New IO.FileInfo(linkPath), Nothing)
     End Function
 
     Public Shared Function ResolveLink(ByVal file As IO.FileInfo) As String
@@ -172,11 +162,7 @@ Public Class SearchItem
         Dim linkPath As String = mShellLink.GetLinkedPath(file.FullName)
         mShellLink = Nothing
 
-        If IO.File.Exists(linkPath) Then
-            Return linkPath
-        Else
-            Return ""
-        End If
+        Return If(IO.File.Exists(linkPath), linkPath, "")
     End Function
 
     Protected Overrides Sub Finalize()

@@ -94,28 +94,28 @@
     <Import Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="frmAbout.Designer.vb">
-      <DependentUpon>frmAbout.vb</DependentUpon>
+    <Compile Include="FormAbout.Designer.vb">
+      <DependentUpon>FormAbout.vb</DependentUpon>
     </Compile>
-    <Compile Include="frmAbout.vb">
+    <Compile Include="FormAbout.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="CustomDialogs\frmAddFromDropProgress.Designer.vb">
-      <DependentUpon>frmAddFromDropProgress.vb</DependentUpon>
+    <Compile Include="CustomDialogs\FormAddFromDropProgress.Designer.vb">
+      <DependentUpon>FormAddFromDropProgress.vb</DependentUpon>
     </Compile>
-    <Compile Include="CustomDialogs\frmAddFromDropProgress.vb">
+    <Compile Include="CustomDialogs\FormAddFromDropProgress.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="CustomDialogs\frmAddFromDropExtension.Designer.vb">
-      <DependentUpon>frmAddFromDropExtension.vb</DependentUpon>
+    <Compile Include="CustomDialogs\FormAddFromDropExtension.Designer.vb">
+      <DependentUpon>FormAddFromDropExtension.vb</DependentUpon>
     </Compile>
-    <Compile Include="CustomDialogs\frmAddFromDropExtension.vb">
+    <Compile Include="CustomDialogs\FormAddFromDropExtension.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="CustomDialogs\frmAddFromDropResult.Designer.vb">
-      <DependentUpon>frmAddFromDropResult.vb</DependentUpon>
+    <Compile Include="CustomDialogs\FormAddFromDropResult.Designer.vb">
+      <DependentUpon>FormAddFromDropResult.vb</DependentUpon>
     </Compile>
-    <Compile Include="CustomDialogs\frmAddFromDropResult.vb">
+    <Compile Include="CustomDialogs\FormAddFromDropResult.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Helper Classes\CustomListView\KLListView.Designer.vb">
@@ -129,28 +129,28 @@
     <Compile Include="Helper Classes\FFListView.vb">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="frmOptions.Designer.vb">
-      <DependentUpon>frmOptions.vb</DependentUpon>
+    <Compile Include="FormOptions.Designer.vb">
+      <DependentUpon>FormOptions.vb</DependentUpon>
     </Compile>
-    <Compile Include="frmOptions.vb">
+    <Compile Include="FormOptions.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmSetup.Designer.vb">
-      <DependentUpon>frmSetup.vb</DependentUpon>
+    <Compile Include="FormSetup.Designer.vb">
+      <DependentUpon>FormSetup.vb</DependentUpon>
     </Compile>
-    <Compile Include="frmSetup.vb">
+    <Compile Include="FormSetup.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Helper Classes\HLSRGB.vb" />
     <Compile Include="Helper Classes\ListViewComparer.vb" />
-    <Compile Include="Helper Classes\modGDIFX.vb" />
+    <Compile Include="Helper Classes\ModGDIFX.vb" />
     <Compile Include="Helper Classes\KbdHookAPI.vb" />
     <Compile Include="SearchEngine\SearchCategories.vb" />
-    <Compile Include="frmMain.vb">
+    <Compile Include="FormMain.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmMain.Designer.vb">
-      <DependentUpon>frmMain.vb</DependentUpon>
+    <Compile Include="FormMain.Designer.vb">
+      <DependentUpon>FormMain.vb</DependentUpon>
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="SearchEngine\SearchCategory.vb" />
@@ -175,40 +175,40 @@
     <Compile Include="SearchEngine\SearchPath.vb" />
     <Compile Include="SearchEngine\SearchPaths.vb" />
     <Compile Include="Settings.vb" />
-    <Compile Include="xfxShell.vb" />
+    <Compile Include="XfxShell.vb" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="CustomDialogs\frmAddFromDropExtension.resx">
+    <EmbeddedResource Include="CustomDialogs\FormAddFromDropExtension.resx">
       <SubType>Designer</SubType>
-      <DependentUpon>frmAddFromDropExtension.vb</DependentUpon>
+      <DependentUpon>FormAddFromDropExtension.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="CustomDialogs\frmAddFromDropResult.resx">
+    <EmbeddedResource Include="CustomDialogs\FormAddFromDropResult.resx">
       <SubType>Designer</SubType>
-      <DependentUpon>frmAddFromDropResult.vb</DependentUpon>
+      <DependentUpon>FormAddFromDropResult.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="frmAbout.resx">
+    <EmbeddedResource Include="FormAbout.resx">
       <SubType>Designer</SubType>
-      <DependentUpon>frmAbout.vb</DependentUpon>
+      <DependentUpon>FormAbout.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="CustomDialogs\frmAddFromDropProgress.resx">
+    <EmbeddedResource Include="CustomDialogs\FormAddFromDropProgress.resx">
       <SubType>Designer</SubType>
-      <DependentUpon>frmAddFromDropProgress.vb</DependentUpon>
+      <DependentUpon>FormAddFromDropProgress.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Helper Classes\CustomListView\KLListView.resx">
       <SubType>Designer</SubType>
       <DependentUpon>KLListView.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="frmMain.resx">
+    <EmbeddedResource Include="FormMain.resx">
       <SubType>Designer</SubType>
-      <DependentUpon>frmMain.vb</DependentUpon>
+      <DependentUpon>FormMain.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="frmOptions.resx">
+    <EmbeddedResource Include="FormOptions.resx">
       <SubType>Designer</SubType>
-      <DependentUpon>frmOptions.vb</DependentUpon>
+      <DependentUpon>FormOptions.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="frmSetup.resx">
+    <EmbeddedResource Include="FormSetup.resx">
       <SubType>Designer</SubType>
-      <DependentUpon>frmSetup.vb</DependentUpon>
+      <DependentUpon>FormSetup.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="My Project\Resources.resx">
       <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
