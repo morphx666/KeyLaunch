@@ -25,8 +25,7 @@ And here’s a screenshot of version 3.0:
 
 Here’s a list of some of the most important improvements over version 2.x:
 
-- Much nicer interface
-- Fully realizable interface
+- Nicer and fully realizable interface
 - Easier configuration
 - [Customizable shortcut-able Categories based on files types](https://whenimbored.xfx.net/wp-content/uploads/2012/10/kl-categories1.png)
 - Ability to open the folder containing the selected file
